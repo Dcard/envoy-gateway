@@ -9,11 +9,12 @@ import (
 	appsv1 "k8s.io/api/apps/v1"
 	corev1 "k8s.io/api/core/v1"
 	"k8s.io/utils/ptr"
-	gwapiv1 "sigs.k8s.io/gateway-api/apis/v1beta1"
+	gwapiv1 "sigs.k8s.io/gateway-api/apis/v1"
+	gwapiv1b1 "sigs.k8s.io/gateway-api/apis/v1beta1"
 )
 
 // UpdateGatewayStatusAcceptedCondition updates the status condition for the provided Gateway based on the accepted state.
-func UpdateGatewayStatusAcceptedCondition(gw *gwapiv1.Gateway, accepted bool) *gwapiv1.Gateway {
+func UpdateGatewayStatusAcceptedCondition(gw *gwapiv1b1.Gateway, accepted bool) *gwapiv1b1.Gateway {
 	gw.Status.Conditions = MergeConditions(gw.Status.Conditions, computeGatewayAcceptedCondition(gw, accepted))
 	return gw
 }
@@ -21,7 +22,7 @@ func UpdateGatewayStatusAcceptedCondition(gw *gwapiv1.Gateway, accepted bool) *g
 // UpdateGatewayStatusProgrammedCondition updates the status addresses for the provided gateway
 // based on the status IP/Hostname of svc and updates the Programmed condition based on the
 // service and deployment state.
-func UpdateGatewayStatusProgrammedCondition(gw *gwapiv1.Gateway, svc *corev1.Service, deployment *appsv1.Deployment, nodeAddresses ...string) {
+func UpdateGatewayStatusProgrammedCondition(gw *gwapiv1b1.Gateway, svc *corev1.Service, deployment *appsv1.Deployment, nodeAddresses ...string) {
 	var addresses, hostnames []string
 	// Update the status addresses field.
 	if svc != nil {

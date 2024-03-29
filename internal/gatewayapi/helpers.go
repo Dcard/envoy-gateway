@@ -14,8 +14,9 @@ import (
 	"k8s.io/apimachinery/pkg/runtime/schema"
 	"k8s.io/apimachinery/pkg/types"
 	"k8s.io/utils/ptr"
+	gwapiv1 "sigs.k8s.io/gateway-api/apis/v1"
 	"sigs.k8s.io/gateway-api/apis/v1alpha2"
-	gwapiv1 "sigs.k8s.io/gateway-api/apis/v1beta1"
+	gwapiv1b1 "sigs.k8s.io/gateway-api/apis/v1beta1"
 
 	"github.com/envoyproxy/gateway/internal/ir"
 	"github.com/envoyproxy/gateway/internal/utils"
@@ -32,36 +33,36 @@ const (
 )
 
 type protocolPort struct {
-	protocol gwapiv1.ProtocolType
+	protocol gwapiv1b1.ProtocolType
 	port     int32
 }
 
-func GroupPtr(name string) *gwapiv1.Group {
-	group := gwapiv1.Group(name)
+func GroupPtr(name string) *gwapiv1b1.Group {
+	group := gwapiv1b1.Group(name)
 	return &group
 }
 
-func KindPtr(name string) *gwapiv1.Kind {
-	kind := gwapiv1.Kind(name)
+func KindPtr(name string) *gwapiv1b1.Kind {
+	kind := gwapiv1b1.Kind(name)
 	return &kind
 }
 
-func NamespacePtr(name string) *gwapiv1.Namespace {
-	namespace := gwapiv1.Namespace(name)
+func NamespacePtr(name string) *gwapiv1b1.Namespace {
+	namespace := gwapiv1b1.Namespace(name)
 	return &namespace
 }
 
-func FromNamespacesPtr(fromNamespaces gwapiv1.FromNamespaces) *gwapiv1.FromNamespaces {
+func FromNamespacesPtr(fromNamespaces gwapiv1b1.FromNamespaces) *gwapiv1b1.FromNamespaces {
 	return &fromNamespaces
 }
 
-func SectionNamePtr(name string) *gwapiv1.SectionName {
-	sectionName := gwapiv1.SectionName(name)
+func SectionNamePtr(name string) *gwapiv1b1.SectionName {
+	sectionName := gwapiv1b1.SectionName(name)
 	return &sectionName
 }
 
-func PortNumPtr(val int32) *gwapiv1.PortNumber {
-	portNum := gwapiv1.PortNumber(val)
+func PortNumPtr(val int32) *gwapiv1b1.PortNumber {
+	portNum := gwapiv1b1.PortNumber(val)
 	return &portNum
 }
 
@@ -71,27 +72,27 @@ func ObjectNamePtr(val string) *v1alpha2.ObjectName {
 }
 
 var (
-	PathMatchTypeDerefOr       = ptr.Deref[gwapiv1.PathMatchType]
+	PathMatchTypeDerefOr       = ptr.Deref[gwapiv1b1.PathMatchType]
 	GRPCMethodMatchTypeDerefOr = ptr.Deref[v1alpha2.GRPCMethodMatchType]
-	HeaderMatchTypeDerefOr     = ptr.Deref[gwapiv1.HeaderMatchType]
-	QueryParamMatchTypeDerefOr = ptr.Deref[gwapiv1.QueryParamMatchType]
+	HeaderMatchTypeDerefOr     = ptr.Deref[gwapiv1b1.HeaderMatchType]
+	QueryParamMatchTypeDerefOr = ptr.Deref[gwapiv1b1.QueryParamMatchType]
 )
 
-func NamespaceDerefOr(namespace *gwapiv1.Namespace, defaultNamespace string) string {
+func NamespaceDerefOr(namespace *gwapiv1b1.Namespace, defaultNamespace string) string {
 	if namespace != nil && *namespace != "" {
 		return string(*namespace)
 	}
 	return defaultNamespace
 }
 
-func GroupDerefOr(group *gwapiv1.Group, defaultGroup string) string {
+func GroupDerefOr(group *gwapiv1b1.Group, defaultGroup string) string {
 	if group != nil && *group != "" {
 		return string(*group)
 	}
 	return defaultGroup
 }
 
-func KindDerefOr(kind *gwapiv1.Kind, defaultKind string) string {
+func KindDerefOr(kind *gwapiv1b1.Kind, defaultKind string) string {
 	if kind != nil && *kind != "" {
 		return string(*kind)
 	}
@@ -102,8 +103,8 @@ func KindDerefOr(kind *gwapiv1.Kind, defaultKind string) string {
 // to a Gateway with the given namespace/name, irrespective of whether a
 // section/listener name has been specified (i.e. a parent ref to a listener
 // on the specified gateway will return "true").
-func IsRefToGateway(parentRef gwapiv1.ParentReference, gateway types.NamespacedName) bool {
-	if parentRef.Group != nil && string(*parentRef.Group) != gwapiv1.GroupName {
+func IsRefToGateway(parentRef gwapiv1b1.ParentReference, gateway types.NamespacedName) bool {
+	if parentRef.Group != nil && string(*parentRef.Group) != gwapiv1b1.GroupName {
 		return false
 	}
 
@@ -122,7 +123,7 @@ func IsRefToGateway(parentRef gwapiv1.ParentReference, gateway types.NamespacedN
 // in the given list, and if so, a list of the Listeners within that Gateway that
 // are included by the parent ref (either one specific Listener, or all Listeners
 // in the Gateway, depending on whether section name is specified or not).
-func GetReferencedListeners(parentRef gwapiv1.ParentReference, gateways []*GatewayContext) (bool, []*ListenerContext) {
+func GetReferencedListeners(parentRef gwapiv1b1.ParentReference, gateways []*GatewayContext) (bool, []*ListenerContext) {
 	var selectsGateway bool
 	var referencedListeners []*ListenerContext
 
@@ -156,7 +157,7 @@ func HasReadyListener(listeners []*ListenerContext) bool {
 }
 
 // ValidateHTTPRouteFilter validates the provided filter within HTTPRoute.
-func ValidateHTTPRouteFilter(filter *gwapiv1.HTTPRouteFilter, extGKs ...schema.GroupKind) error {
+func ValidateHTTPRouteFilter(filter *gwapiv1b1.HTTPRouteFilter, extGKs ...schema.GroupKind) error {
 	switch {
 	case filter == nil:
 		return errors.New("filter is nil")
@@ -172,8 +173,8 @@ func ValidateHTTPRouteFilter(filter *gwapiv1.HTTPRouteFilter, extGKs ...schema.G
 			return errors.New("extensionRef field must be specified for an extended filter")
 		default:
 			for _, gk := range extGKs {
-				if filter.ExtensionRef.Group == gwapiv1.Group(gk.Group) &&
-					filter.ExtensionRef.Kind == gwapiv1.Kind(gk.Kind) {
+				if filter.ExtensionRef.Group == gwapiv1b1.Group(gk.Group) &&
+					filter.ExtensionRef.Kind == gwapiv1b1.Kind(gk.Kind) {
 					return nil
 				}
 			}
@@ -199,8 +200,8 @@ func ValidateGRPCRouteFilter(filter *v1alpha2.GRPCRouteFilter, extGKs ...schema.
 			return errors.New("extensionRef field must be specified for an extended filter")
 		default:
 			for _, gk := range extGKs {
-				if filter.ExtensionRef.Group == gwapiv1.Group(gk.Group) &&
-					filter.ExtensionRef.Kind == gwapiv1.Kind(gk.Kind) {
+				if filter.ExtensionRef.Group == gwapiv1b1.Group(gk.Group) &&
+					filter.ExtensionRef.Kind == gwapiv1b1.Kind(gk.Kind) {
 					return nil
 				}
 			}
@@ -241,7 +242,7 @@ func servicePortToContainerPort(servicePort int32) int32 {
 
 // computeHosts returns a list of the intersecting hostnames between the route
 // and the listener.
-func computeHosts(routeHostnames []string, listenerHostname *gwapiv1.Hostname) []string {
+func computeHosts(routeHostnames []string, listenerHostname *gwapiv1b1.Hostname) []string {
 	var listenerHostnameVal string
 	if listenerHostname != nil {
 		listenerHostnameVal = string(*listenerHostname)
@@ -403,7 +404,7 @@ func IsMergeGatewaysEnabled(resources *Resources) bool {
 	return resources.EnvoyProxy != nil && resources.EnvoyProxy.Spec.MergeGateways != nil && *resources.EnvoyProxy.Spec.MergeGateways
 }
 
-func protocolSliceToStringSlice(protocols []gwapiv1.ProtocolType) []string {
+func protocolSliceToStringSlice(protocols []gwapiv1b1.ProtocolType) []string {
 	var protocolStrings []string
 	for _, protocol := range protocols {
 		protocolStrings = append(protocolStrings, string(protocol))
@@ -414,10 +415,10 @@ func protocolSliceToStringSlice(protocols []gwapiv1.ProtocolType) []string {
 // getAncestorRefForPolicy returns Gateway as an ancestor reference for policy.
 func getAncestorRefForPolicy(gatewayNN types.NamespacedName, sectionName *v1alpha2.SectionName) v1alpha2.ParentReference {
 	return v1alpha2.ParentReference{
-		Group:       GroupPtr(gwapiv1.GroupName),
+		Group:       GroupPtr(gwapiv1b1.GroupName),
 		Kind:        KindPtr(KindGateway),
 		Namespace:   NamespacePtr(gatewayNN.Namespace),
-		Name:        gwapiv1.ObjectName(gatewayNN.Name),
+		Name:        gwapiv1b1.ObjectName(gatewayNN.Name),
 		SectionName: sectionName,
 	}
 }

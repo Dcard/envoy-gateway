@@ -16,7 +16,6 @@ import (
 	"k8s.io/apimachinery/pkg/apis/meta/v1/unstructured"
 	"sigs.k8s.io/gateway-api/apis/v1beta1"
 	"sigs.k8s.io/gateway-api/apis/v1alpha2"
-	"sigs.k8s.io/gateway-api/apis/v1beta1"
 	"sigs.k8s.io/mcs-api/pkg/apis/v1alpha1"
 )
 
@@ -25,27 +24,27 @@ func (in *Resources) DeepCopyInto(out *Resources) {
 	*out = *in
 	if in.GatewayClass != nil {
 		in, out := &in.GatewayClass, &out.GatewayClass
-		*out = new(v1.GatewayClass)
+		*out = new(v1beta1.GatewayClass)
 		(*in).DeepCopyInto(*out)
 	}
 	if in.Gateways != nil {
 		in, out := &in.Gateways, &out.Gateways
-		*out = make([]*v1.Gateway, len(*in))
+		*out = make([]*v1beta1.Gateway, len(*in))
 		for i := range *in {
 			if (*in)[i] != nil {
 				in, out := &(*in)[i], &(*out)[i]
-				*out = new(v1.Gateway)
+				*out = new(v1beta1.Gateway)
 				(*in).DeepCopyInto(*out)
 			}
 		}
 	}
 	if in.HTTPRoutes != nil {
 		in, out := &in.HTTPRoutes, &out.HTTPRoutes
-		*out = make([]*v1.HTTPRoute, len(*in))
+		*out = make([]*v1beta1.HTTPRoute, len(*in))
 		for i := range *in {
 			if (*in)[i] != nil {
 				in, out := &(*in)[i], &(*out)[i]
-				*out = new(v1.HTTPRoute)
+				*out = new(v1beta1.HTTPRoute)
 				(*in).DeepCopyInto(*out)
 			}
 		}

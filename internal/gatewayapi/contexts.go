@@ -13,14 +13,15 @@ import (
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 	"k8s.io/apimachinery/pkg/labels"
 	"sigs.k8s.io/controller-runtime/pkg/client"
+	gwapiv1 "sigs.k8s.io/gateway-api/apis/v1"
 	"sigs.k8s.io/gateway-api/apis/v1alpha2"
-	gwapiv1 "sigs.k8s.io/gateway-api/apis/v1beta1"
+	gwapiv1b1 "sigs.k8s.io/gateway-api/apis/v1beta1"
 )
 
 // GatewayContext wraps a Gateway and provides helper methods for
 // setting conditions, accessing Listeners, etc.
 type GatewayContext struct {
-	*gwapiv1.Gateway
+	*gwapiv1b1.Gateway
 
 	listeners []*ListenerContext
 }
@@ -29,11 +30,11 @@ type GatewayContext struct {
 // ListenerContexts from the Gateway spec.
 func (g *GatewayContext) ResetListeners() {
 	numListeners := len(g.Spec.Listeners)
-	g.Status.Listeners = make([]gwapiv1.ListenerStatus, numListeners)
+	g.Status.Listeners = make([]gwapiv1b1.ListenerStatus, numListeners)
 	g.listeners = make([]*ListenerContext, numListeners)
 	for i := range g.Spec.Listeners {
 		listener := &g.Spec.Listeners[i]
-		g.Status.Listeners[i] = gwapiv1.ListenerStatus{Name: listener.Name}
+		g.Status.Listeners[i] = gwapiv1b1.ListenerStatus{Name: listener.Name}
 		g.listeners[i] = &ListenerContext{
 			Listener:          listener,
 			gateway:           g.Gateway,
@@ -46,15 +47,15 @@ func (g *GatewayContext) ResetListeners() {
 // setting conditions and other status information on the associated
 // Gateway, etc.
 type ListenerContext struct {
-	*gwapiv1.Listener
+	*gwapiv1b1.Listener
 
-	gateway           *gwapiv1.Gateway
+	gateway           *gwapiv1b1.Gateway
 	listenerStatusIdx int
 	namespaceSelector labels.Selector
 	tlsSecrets        []*v1.Secret
 }
 
-func (l *ListenerContext) SetCondition(conditionType gwapiv1.ListenerConditionType, status metav1.ConditionStatus, reason gwapiv1.ListenerConditionReason, message string) {
+func (l *ListenerContext) SetCondition(conditionType gwapiv1b1.ListenerConditionType, status metav1.ConditionStatus, reason gwapiv1b1.ListenerConditionReason, message string) {
 	cond := metav1.Condition{
 		Type:               string(conditionType),
 		Status:             status,
@@ -86,7 +87,7 @@ func (l *ListenerContext) SetCondition(conditionType gwapiv1.ListenerConditionTy
 	}
 }
 
-func (l *ListenerContext) SetSupportedKinds(kinds ...gwapiv1.RouteGroupKind) {
+func (l *ListenerContext) SetSupportedKinds(kinds ...gwapiv1b1.RouteGroupKind) {
 	l.gateway.Status.Listeners[l.listenerStatusIdx].SupportedKinds = kinds
 }
 
@@ -98,7 +99,7 @@ func (l *ListenerContext) AttachedRoutes() int32 {
 	return l.gateway.Status.Listeners[l.listenerStatusIdx].AttachedRoutes
 }
 
-func (l *ListenerContext) AllowsKind(kind gwapiv1.RouteGroupKind) bool {
+func (l *ListenerContext) AllowsKind(kind gwapiv1b1.RouteGroupKind) bool {
 	for _, allowed := range l.gateway.Status.Listeners[l.listenerStatusIdx].SupportedKinds {
 		if GroupDerefOr(allowed.Group, "") == GroupDerefOr(kind.Group, "") &&
 			allowed.Kind == kind.Kind {
@@ -162,9 +163,9 @@ type HTTPRouteContext struct {
 	// GatewayControllerName is the name of the Gateway API controller.
 	GatewayControllerName string
 
-	*gwapiv1.HTTPRoute
+	*gwapiv1b1.HTTPRoute
 
-	ParentRefs map[gwapiv1.ParentReference]*RouteParentContext
+	ParentRefs map[gwapiv1b1.ParentReference]*RouteParentContext
 }
 
 // GRPCRouteContext wraps a GRPCRoute and provides helper methods for
@@ -175,7 +176,7 @@ type GRPCRouteContext struct {
 
 	*v1alpha2.GRPCRoute
 
-	ParentRefs map[gwapiv1.ParentReference]*RouteParentContext
+	ParentRefs map[gwapiv1b1.ParentReference]*RouteParentContext
 }
 
 // TLSRouteContext wraps a TLSRoute and provides helper methods for
@@ -186,7 +187,7 @@ type TLSRouteContext struct {
 
 	*v1alpha2.TLSRoute
 
-	ParentRefs map[gwapiv1.ParentReference]*RouteParentContext
+	ParentRefs map[gwapiv1b1.ParentReference]*RouteParentContext
 }
 
 // UDPRouteContext wraps a UDPRoute and provides helper methods for
@@ -197,7 +198,7 @@ type UDPRouteContext struct {
 
 	*v1alpha2.UDPRoute
 
-	ParentRefs map[gwapiv1.ParentReference]*RouteParentContext
+	ParentRefs map[gwapiv1b1.ParentReference]*RouteParentContext
 }
 
 // TCPRouteContext wraps a TCPRoute and provides helper methods for
@@ -208,12 +209,12 @@ type TCPRouteContext struct {
 
 	*v1alpha2.TCPRoute
 
-	ParentRefs map[gwapiv1.ParentReference]*RouteParentContext
+	ParentRefs map[gwapiv1b1.ParentReference]*RouteParentContext
 }
 
 // GetRouteType returns the Kind of the Route object, HTTPRoute,
 // TLSRoute, TCPRoute, UDPRoute etc.
-func GetRouteType(route RouteContext) gwapiv1.Kind {
+func GetRouteType(route RouteContext) gwapiv1b1.Kind {
 	rv := reflect.ValueOf(route).Elem()
 	return gwapiv1.Kind(rv.FieldByName("Kind").String())
 }
@@ -239,36 +240,36 @@ func GetHostnames(route RouteContext) []string {
 // TODO: [v1alpha2-gwapiv1] This should not be required once all Route
 // objects being implemented are of type gwapiv1.
 // GetParentReferences returns the ParentReference of the Route object.
-func GetParentReferences(route RouteContext) []gwapiv1.ParentReference {
+func GetParentReferences(route RouteContext) []gwapiv1b1.ParentReference {
 	rv := reflect.ValueOf(route).Elem()
 	kind := rv.FieldByName("Kind").String()
 	pr := rv.FieldByName("Spec").FieldByName("ParentRefs")
 	if kind == KindHTTPRoute || kind == KindGRPCRoute {
-		return pr.Interface().([]gwapiv1.ParentReference)
+		return pr.Interface().([]gwapiv1b1.ParentReference)
 	}
 
-	parentReferences := make([]gwapiv1.ParentReference, pr.Len())
+	parentReferences := make([]gwapiv1b1.ParentReference, pr.Len())
 	for i := 0; i < len(parentReferences); i++ {
-		p := pr.Index(i).Interface().(gwapiv1.ParentReference)
+		p := pr.Index(i).Interface().(gwapiv1b1.ParentReference)
 		parentReferences[i] = UpgradeParentReference(p)
 	}
 	return parentReferences
 }
 
 // GetRouteStatus returns the RouteStatus object associated with the Route.
-func GetRouteStatus(route RouteContext) *gwapiv1.RouteStatus {
+func GetRouteStatus(route RouteContext) *gwapiv1b1.RouteStatus {
 	rv := reflect.ValueOf(route).Elem()
-	rs := rv.FieldByName("Status").FieldByName("RouteStatus").Interface().(gwapiv1.RouteStatus)
+	rs := rv.FieldByName("Status").FieldByName("RouteStatus").Interface().(gwapiv1b1.RouteStatus)
 	return &rs
 }
 
 // GetRouteParentContext returns RouteParentContext by using the Route
 // objects' ParentReference.
-func GetRouteParentContext(route RouteContext, forParentRef gwapiv1.ParentReference) *RouteParentContext {
+func GetRouteParentContext(route RouteContext, forParentRef gwapiv1b1.ParentReference) *RouteParentContext {
 	rv := reflect.ValueOf(route).Elem()
 	pr := rv.FieldByName("ParentRefs")
 	if pr.IsNil() {
-		mm := reflect.MakeMap(reflect.TypeOf(map[gwapiv1.ParentReference]*RouteParentContext{}))
+		mm := reflect.MakeMap(reflect.TypeOf(map[gwapiv1b1.ParentReference]*RouteParentContext{}))
 		pr.Set(mm)
 	}
 
@@ -282,10 +283,10 @@ func GetRouteParentContext(route RouteContext, forParentRef gwapiv1.ParentRefere
 		isHTTPRoute = true
 	}
 
-	var parentRef *gwapiv1.ParentReference
+	var parentRef *gwapiv1b1.ParentReference
 	specParentRefs := rv.FieldByName("Spec").FieldByName("ParentRefs")
 	for i := 0; i < specParentRefs.Len(); i++ {
-		p := specParentRefs.Index(i).Interface().(gwapiv1.ParentReference)
+		p := specParentRefs.Index(i).Interface().(gwapiv1b1.ParentReference)
 		up := p
 		if !isHTTPRoute {
 			up = UpgradeParentReference(p)
@@ -307,7 +308,7 @@ func GetRouteParentContext(route RouteContext, forParentRef gwapiv1.ParentRefere
 	routeParentStatusIdx := -1
 	statusParents := rv.FieldByName("Status").FieldByName("Parents")
 	for i := 0; i < statusParents.Len(); i++ {
-		p := statusParents.Index(i).FieldByName("ParentRef").Interface().(gwapiv1.ParentReference)
+		p := statusParents.Index(i).FieldByName("ParentRef").Interface().(gwapiv1b1.ParentReference)
 		if !isHTTPRoute {
 			p = UpgradeParentReference(p)
 			defaultNamespace := gwapiv1.Namespace(metav1.NamespaceDefault)
@@ -350,11 +351,11 @@ func GetRouteParentContext(route RouteContext, forParentRef gwapiv1.ParentRefere
 // setting conditions and other status information on the associated
 // HTTPRoute, TLSRoute etc.
 type RouteParentContext struct {
-	*gwapiv1.ParentReference
+	*gwapiv1b1.ParentReference
 
 	// TODO: [v1alpha2-gwapiv1] This can probably be replaced with
 	// a single field pointing to *gwapiv1.RouteStatus.
-	HTTPRoute *gwapiv1.HTTPRoute
+	HTTPRoute *gwapiv1b1.HTTPRoute
 	GRPCRoute *v1alpha2.GRPCRoute
 	TLSRoute  *v1alpha2.TLSRoute
 	TCPRoute  *v1alpha2.TCPRoute
@@ -368,7 +369,7 @@ func (r *RouteParentContext) SetListeners(listeners ...*ListenerContext) {
 	r.listeners = append(r.listeners, listeners...)
 }
 
-func (r *RouteParentContext) SetCondition(route RouteContext, conditionType gwapiv1.RouteConditionType, status metav1.ConditionStatus, reason gwapiv1.RouteConditionReason, message string) {
+func (r *RouteParentContext) SetCondition(route RouteContext, conditionType gwapiv1b1.RouteConditionType, status metav1.ConditionStatus, reason gwapiv1b1.RouteConditionReason, message string) {
 	cond := metav1.Condition{
 		Type:               string(conditionType),
 		Status:             status,
@@ -406,7 +407,7 @@ func (r *RouteParentContext) ResetConditions(route RouteContext) {
 	routeStatus.Parents[r.routeParentStatusIdx].Conditions = make([]metav1.Condition, 0)
 }
 
-func (r *RouteParentContext) HasCondition(route RouteContext, condType gwapiv1.RouteConditionType, status metav1.ConditionStatus) bool {
+func (r *RouteParentContext) HasCondition(route RouteContext, condType gwapiv1b1.RouteConditionType, status metav1.ConditionStatus) bool {
 	var conditions []metav1.Condition
 	routeStatus := GetRouteStatus(route)
 	conditions = routeStatus.Parents[r.routeParentStatusIdx].Conditions
@@ -421,15 +422,15 @@ func (r *RouteParentContext) HasCondition(route RouteContext, condType gwapiv1.R
 // BackendRefContext represents a generic BackendRef object (HTTPBackendRef, GRPCBackendRef or BackendRef itself)
 type BackendRefContext any
 
-func GetBackendRef(b BackendRefContext) *gwapiv1.BackendRef {
+func GetBackendRef(b BackendRefContext) *gwapiv1b1.BackendRef {
 	rv := reflect.ValueOf(b)
 	br := rv.FieldByName("BackendRef")
 	if br.IsValid() {
-		backendRef := br.Interface().(gwapiv1.BackendRef)
+		backendRef := br.Interface().(gwapiv1b1.BackendRef)
 		return &backendRef
 
 	}
-	backendRef := b.(gwapiv1.BackendRef)
+	backendRef := b.(gwapiv1b1.BackendRef)
 	return &backendRef
 }
 

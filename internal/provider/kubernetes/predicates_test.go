@@ -18,7 +18,6 @@ import (
 	"sigs.k8s.io/controller-runtime/pkg/client"
 	fakeclient "sigs.k8s.io/controller-runtime/pkg/client/fake"
 	gwapiv1a2 "sigs.k8s.io/gateway-api/apis/v1alpha2"
-	gwapiv1 "sigs.k8s.io/gateway-api/apis/v1beta1"
 	gwapiv1b1 "sigs.k8s.io/gateway-api/apis/v1beta1"
 
 	"github.com/envoyproxy/gateway/api/v1alpha1"
@@ -296,7 +295,7 @@ func TestValidateSecretForReconcile(t *testing.T) {
 		r.client = fakeclient.NewClientBuilder().
 			WithScheme(envoygateway.GetScheme()).
 			WithObjects(tc.configs...).
-			WithIndex(&gwapiv1.Gateway{}, secretGatewayIndex, secretGatewayIndexFunc).
+			WithIndex(&gwapiv1b1.Gateway{}, secretGatewayIndex, secretGatewayIndexFunc).
 			WithIndex(&v1alpha1.SecurityPolicy{}, secretSecurityPolicyIndex, secretSecurityPolicyIndexFunc).
 			Build()
 		t.Run(tc.name, func(t *testing.T) {
@@ -361,7 +360,7 @@ func TestValidateEndpointSliceForReconcile(t *testing.T) {
 		r.client = fakeclient.NewClientBuilder().
 			WithScheme(envoygateway.GetScheme()).
 			WithObjects(tc.configs...).
-			WithIndex(&gwapiv1.HTTPRoute{}, backendHTTPRouteIndex, backendHTTPRouteIndexFunc).
+			WithIndex(&gwapiv1b1.HTTPRoute{}, backendHTTPRouteIndex, backendHTTPRouteIndexFunc).
 			WithIndex(&gwapiv1a2.GRPCRoute{}, backendGRPCRouteIndex, backendGRPCRouteIndexFunc).
 			WithIndex(&gwapiv1a2.TLSRoute{}, backendTLSRouteIndex, backendTLSRouteIndexFunc).
 			WithIndex(&gwapiv1a2.TCPRoute{}, backendTCPRouteIndex, backendTCPRouteIndexFunc).
@@ -503,7 +502,7 @@ func TestValidateServiceForReconcile(t *testing.T) {
 						},
 						ExtAuth: &v1alpha1.ExtAuth{
 							HTTP: &v1alpha1.HTTPExtAuthService{
-								BackendRef: gwapiv1.BackendObjectReference{
+								BackendRef: gwapiv1b1.BackendObjectReference{
 									Name: "ext-auth-http-service",
 								},
 							},
@@ -518,10 +517,10 @@ func TestValidateServiceForReconcile(t *testing.T) {
 			name: "update status of all gateways under gatewayclass when MergeGateways enabled",
 			configs: []client.Object{
 				test.GetGatewayClass("test-mg", v1alpha1.GatewayControllerName, &test.GroupKindNamespacedName{
-					Group:     gwapiv1.Group(mergeGatewaysConfig.GroupVersionKind().Group),
-					Kind:      gwapiv1.Kind(mergeGatewaysConfig.Kind),
-					Namespace: gwapiv1.Namespace(mergeGatewaysConfig.Namespace),
-					Name:      gwapiv1.ObjectName(mergeGatewaysConfig.Name),
+					Group:     gwapiv1b1.Group(mergeGatewaysConfig.GroupVersionKind().Group),
+					Kind:      gwapiv1b1.Kind(mergeGatewaysConfig.Kind),
+					Namespace: gwapiv1b1.Namespace(mergeGatewaysConfig.Namespace),
+					Name:      gwapiv1b1.ObjectName(mergeGatewaysConfig.Name),
 				}),
 				mergeGatewaysConfig,
 				test.GetGateway(types.NamespacedName{Name: "merged-gateway-1", Namespace: "default"}, "test-mg", 8081),
@@ -537,10 +536,10 @@ func TestValidateServiceForReconcile(t *testing.T) {
 			name: "no gateways found under gatewayclass when MergeGateways enabled",
 			configs: []client.Object{
 				test.GetGatewayClass("test-mg", v1alpha1.GatewayControllerName, &test.GroupKindNamespacedName{
-					Group:     gwapiv1.Group(mergeGatewaysConfig.GroupVersionKind().Group),
-					Kind:      gwapiv1.Kind(mergeGatewaysConfig.Kind),
-					Namespace: gwapiv1.Namespace(mergeGatewaysConfig.Namespace),
-					Name:      gwapiv1.ObjectName(mergeGatewaysConfig.Name),
+					Group:     gwapiv1b1.Group(mergeGatewaysConfig.GroupVersionKind().Group),
+					Kind:      gwapiv1b1.Kind(mergeGatewaysConfig.Kind),
+					Namespace: gwapiv1b1.Namespace(mergeGatewaysConfig.Namespace),
+					Name:      gwapiv1b1.ObjectName(mergeGatewaysConfig.Name),
 				}),
 				mergeGatewaysConfig,
 			},
@@ -565,7 +564,7 @@ func TestValidateServiceForReconcile(t *testing.T) {
 		r.client = fakeclient.NewClientBuilder().
 			WithScheme(envoygateway.GetScheme()).
 			WithObjects(tc.configs...).
-			WithIndex(&gwapiv1.HTTPRoute{}, backendHTTPRouteIndex, backendHTTPRouteIndexFunc).
+			WithIndex(&gwapiv1b1.HTTPRoute{}, backendHTTPRouteIndex, backendHTTPRouteIndexFunc).
 			WithIndex(&gwapiv1a2.GRPCRoute{}, backendGRPCRouteIndex, backendGRPCRouteIndexFunc).
 			WithIndex(&gwapiv1a2.TLSRoute{}, backendTLSRouteIndex, backendTLSRouteIndexFunc).
 			WithIndex(&gwapiv1a2.TCPRoute{}, backendTCPRouteIndex, backendTCPRouteIndexFunc).
@@ -613,10 +612,10 @@ func TestValidateDeploymentForReconcile(t *testing.T) {
 			name: "update status of all gateways under gatewayclass when MergeGateways enabled",
 			configs: []client.Object{
 				test.GetGatewayClass("test-mg", v1alpha1.GatewayControllerName, &test.GroupKindNamespacedName{
-					Group:     gwapiv1.Group(mergeGatewaysConfig.GroupVersionKind().Group),
-					Kind:      gwapiv1.Kind(mergeGatewaysConfig.Kind),
-					Namespace: gwapiv1.Namespace(mergeGatewaysConfig.Namespace),
-					Name:      gwapiv1.ObjectName(mergeGatewaysConfig.Name),
+					Group:     gwapiv1b1.Group(mergeGatewaysConfig.GroupVersionKind().Group),
+					Kind:      gwapiv1b1.Kind(mergeGatewaysConfig.Kind),
+					Namespace: gwapiv1b1.Namespace(mergeGatewaysConfig.Namespace),
+					Name:      gwapiv1b1.ObjectName(mergeGatewaysConfig.Name),
 				}),
 				mergeGatewaysConfig,
 			},
@@ -629,10 +628,10 @@ func TestValidateDeploymentForReconcile(t *testing.T) {
 			name: "no gateways found under gatewayclass when MergeGateways enabled",
 			configs: []client.Object{
 				test.GetGatewayClass("test-mg", v1alpha1.GatewayControllerName, &test.GroupKindNamespacedName{
-					Group:     gwapiv1.Group(mergeGatewaysConfig.GroupVersionKind().Group),
-					Kind:      gwapiv1.Kind(mergeGatewaysConfig.Kind),
-					Namespace: gwapiv1.Namespace(mergeGatewaysConfig.Namespace),
-					Name:      gwapiv1.ObjectName(mergeGatewaysConfig.Name),
+					Group:     gwapiv1b1.Group(mergeGatewaysConfig.GroupVersionKind().Group),
+					Kind:      gwapiv1b1.Kind(mergeGatewaysConfig.Kind),
+					Namespace: gwapiv1b1.Namespace(mergeGatewaysConfig.Namespace),
+					Name:      gwapiv1b1.ObjectName(mergeGatewaysConfig.Name),
 				}),
 				mergeGatewaysConfig,
 				test.GetGateway(types.NamespacedName{Name: "merged-gateway-1", Namespace: "default"}, "test-mg", 8081),

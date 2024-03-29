@@ -536,7 +536,7 @@ func (in *ClientValidationContext) DeepCopyInto(out *ClientValidationContext) {
 	*out = *in
 	if in.CACertificateRefs != nil {
 		in, out := &in.CACertificateRefs, &out.CACertificateRefs
-		*out = make([]v1.SecretObjectReference, len(*in))
+		*out = make([]v1beta1.SecretObjectReference, len(*in))
 		for i := range *in {
 			(*in)[i].DeepCopyInto(&(*out)[i])
 		}
@@ -598,7 +598,7 @@ func (in *ConnectionLimit) DeepCopyInto(out *ConnectionLimit) {
 	*out = *in
 	if in.CloseDelay != nil {
 		in, out := &in.CloseDelay, &out.CloseDelay
-		*out = new(v1.Duration)
+		*out = new(v1beta1.Duration)
 		**out = **in
 	}
 }
@@ -1846,12 +1846,12 @@ func (in *HTTPClientTimeout) DeepCopyInto(out *HTTPClientTimeout) {
 	*out = *in
 	if in.RequestReceivedTimeout != nil {
 		in, out := &in.RequestReceivedTimeout, &out.RequestReceivedTimeout
-		*out = new(v1.Duration)
+		*out = new(v1beta1.Duration)
 		**out = **in
 	}
 	if in.IdleTimeout != nil {
 		in, out := &in.IdleTimeout, &out.IdleTimeout
-		*out = new(v1.Duration)
+		*out = new(v1beta1.Duration)
 		**out = **in
 	}
 }
@@ -1897,12 +1897,12 @@ func (in *HTTPTimeout) DeepCopyInto(out *HTTPTimeout) {
 	*out = *in
 	if in.ConnectionIdleTimeout != nil {
 		in, out := &in.ConnectionIdleTimeout, &out.ConnectionIdleTimeout
-		*out = new(v1.Duration)
+		*out = new(v1beta1.Duration)
 		**out = **in
 	}
 	if in.MaxConnectionDuration != nil {
 		in, out := &in.MaxConnectionDuration, &out.MaxConnectionDuration
-		*out = new(v1.Duration)
+		*out = new(v1beta1.Duration)
 		**out = **in
 	}
 }
@@ -3193,7 +3193,7 @@ func (in *RedisTLSSettings) DeepCopyInto(out *RedisTLSSettings) {
 	*out = *in
 	if in.CertificateRef != nil {
 		in, out := &in.CertificateRef, &out.CertificateRef
-		*out = new(v1.SecretObjectReference)
+		*out = new(v1beta1.SecretObjectReference)
 		(*in).DeepCopyInto(*out)
 	}
 }
@@ -3540,12 +3540,12 @@ func (in *TCPKeepalive) DeepCopyInto(out *TCPKeepalive) {
 	}
 	if in.IdleTime != nil {
 		in, out := &in.IdleTime, &out.IdleTime
-		*out = new(v1.Duration)
+		*out = new(v1beta1.Duration)
 		**out = **in
 	}
 	if in.Interval != nil {
 		in, out := &in.Interval, &out.Interval
-		*out = new(v1.Duration)
+		*out = new(v1beta1.Duration)
 		**out = **in
 	}
 }
@@ -3565,7 +3565,7 @@ func (in *TCPTimeout) DeepCopyInto(out *TCPTimeout) {
 	*out = *in
 	if in.ConnectTimeout != nil {
 		in, out := &in.ConnectTimeout, &out.ConnectTimeout
-		*out = new(v1.Duration)
+		*out = new(v1beta1.Duration)
 		**out = **in
 	}
 }

@@ -28,8 +28,9 @@ import (
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 	"k8s.io/apimachinery/pkg/apis/meta/v1/unstructured"
 	"k8s.io/apimachinery/pkg/util/sets"
+	gwapiv1 "sigs.k8s.io/gateway-api/apis/v1"
 	gwapiv1a2 "sigs.k8s.io/gateway-api/apis/v1alpha2"
-	gwapiv1 "sigs.k8s.io/gateway-api/apis/v1beta1"
+	gwapiv1b1 "sigs.k8s.io/gateway-api/apis/v1beta1"
 
 	egv1a1 "github.com/envoyproxy/gateway/api/v1alpha1"
 	"github.com/envoyproxy/gateway/api/v1alpha1/validation"
@@ -277,7 +278,7 @@ func translateGatewayAPIToIR(resources *gatewayapi.Resources) (*gatewayapi.Trans
 
 	t := &gatewayapi.Translator{
 		GatewayControllerName:   egv1a1.GatewayControllerName,
-		GatewayClassName:        gwapiv1.ObjectName(resources.GatewayClass.Name),
+		GatewayClassName:        gwapiv1b1.ObjectName(resources.GatewayClass.Name),
 		GlobalRateLimitEnabled:  true,
 		EndpointRoutingDisabled: true,
 		EnvoyPatchPolicyEnabled: true,
@@ -304,7 +305,7 @@ func translateGatewayAPIToGatewayAPI(resources *gatewayapi.Resources) (gatewayap
 	// Translate from Gateway API to Xds IR
 	gTranslator := &gatewayapi.Translator{
 		GatewayControllerName:   egv1a1.GatewayControllerName,
-		GatewayClassName:        gwapiv1.ObjectName(resources.GatewayClass.Name),
+		GatewayClassName:        gwapiv1b1.ObjectName(resources.GatewayClass.Name),
 		GlobalRateLimitEnabled:  true,
 		EndpointRoutingDisabled: true,
 		EnvoyPatchPolicyEnabled: true,
@@ -336,7 +337,7 @@ func translateGatewayAPIToXds(dnsDomain string, resourceType string, resources *
 	// Translate from Gateway API to Xds IR
 	gTranslator := &gatewayapi.Translator{
 		GatewayControllerName:   egv1a1.GatewayControllerName,
-		GatewayClassName:        gwapiv1.ObjectName(resources.GatewayClass.Name),
+		GatewayClassName:        gwapiv1b1.ObjectName(resources.GatewayClass.Name),
 		GlobalRateLimitEnabled:  true,
 		EndpointRoutingDisabled: true,
 		EnvoyPatchPolicyEnabled: true,
@@ -542,9 +543,9 @@ func addMissingServices(requiredServices map[string]*v1.Service, obj interface{}
 	var objNamespace string
 	protocol := v1.Protocol(gatewayapi.TCPProtocol)
 
-	refs := []gwapiv1.BackendRef{}
+	refs := []gwapiv1b1.BackendRef{}
 	switch route := obj.(type) {
-	case *gwapiv1.HTTPRoute:
+	case *gwapiv1b1.HTTPRoute:
 		objNamespace = route.Namespace
 		for _, rule := range route.Spec.Rules {
 			for _, httpBakcendRef := range rule.BackendRefs {
@@ -681,22 +682,22 @@ func kubernetesYAMLToResources(str string, addMissingResources bool) (*gatewayap
 			resources.EnvoyProxy = envoyProxy
 		case gatewayapi.KindGatewayClass:
 			typedSpec := spec.Interface()
-			gatewayClass := &gwapiv1.GatewayClass{
+			gatewayClass := &gwapiv1b1.GatewayClass{
 				ObjectMeta: metav1.ObjectMeta{
 					Name:      name,
 					Namespace: namespace,
 				},
-				Spec: typedSpec.(gwapiv1.GatewayClassSpec),
+				Spec: typedSpec.(gwapiv1b1.GatewayClassSpec),
 			}
 			resources.GatewayClass = gatewayClass
 		case gatewayapi.KindGateway:
 			typedSpec := spec.Interface()
-			gateway := &gwapiv1.Gateway{
+			gateway := &gwapiv1b1.Gateway{
 				ObjectMeta: metav1.ObjectMeta{
 					Name:      name,
 					Namespace: namespace,
 				},
-				Spec: typedSpec.(gwapiv1.GatewaySpec),
+				Spec: typedSpec.(gwapiv1b1.GatewaySpec),
 			}
 			resources.Gateways = append(resources.Gateways, gateway)
 		case gatewayapi.KindTCPRoute:
@@ -740,7 +741,7 @@ func kubernetesYAMLToResources(str string, addMissingResources bool) (*gatewayap
 			resources.TLSRoutes = append(resources.TLSRoutes, tlsRoute)
 		case gatewayapi.KindHTTPRoute:
 			typedSpec := spec.Interface()
-			httpRoute := &gwapiv1.HTTPRoute{
+			httpRoute := &gwapiv1b1.HTTPRoute{
 				TypeMeta: metav1.TypeMeta{
 					Kind: gatewayapi.KindHTTPRoute,
 				},
@@ -748,7 +749,7 @@ func kubernetesYAMLToResources(str string, addMissingResources bool) (*gatewayap
 					Name:      name,
 					Namespace: namespace,
 				},
-				Spec: typedSpec.(gwapiv1.HTTPRouteSpec),
+				Spec: typedSpec.(gwapiv1b1.HTTPRouteSpec),
 			}
 			resources.HTTPRoutes = append(resources.HTTPRoutes, httpRoute)
 		case gatewayapi.KindGRPCRoute:
@@ -945,9 +946,9 @@ func addDefaultEnvoyProxy(resources *gatewayapi.Resources) error {
 		},
 	}
 	resources.EnvoyProxy = ep
-	ns := gwapiv1.Namespace(namespace)
-	resources.GatewayClass.Spec.ParametersRef = &gwapiv1.ParametersReference{
-		Group:     gwapiv1.Group(egv1a1.GroupVersion.Group),
+	ns := gwapiv1b1.Namespace(namespace)
+	resources.GatewayClass.Spec.ParametersRef = &gwapiv1b1.ParametersReference{
+		Group:     gwapiv1b1.Group(egv1a1.GroupVersion.Group),
 		Kind:      gatewayapi.KindEnvoyProxy,
 		Name:      defaultEnvoyProxyName,
 		Namespace: &ns,

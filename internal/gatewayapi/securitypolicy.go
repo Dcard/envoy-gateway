@@ -22,7 +22,6 @@ import (
 	"k8s.io/apimachinery/pkg/util/sets"
 	"k8s.io/utils/ptr"
 	gwv1a2 "sigs.k8s.io/gateway-api/apis/v1alpha2"
-	gwapiv1 "sigs.k8s.io/gateway-api/apis/v1beta1"
 	gwv1b1 "sigs.k8s.io/gateway-api/apis/v1beta1"
 
 	egv1a1 "github.com/envoyproxy/gateway/api/v1alpha1"
@@ -771,7 +770,7 @@ func (t *Translator) buildExtAuth(
 	var (
 		http       = policy.Spec.ExtAuth.HTTP
 		grpc       = policy.Spec.ExtAuth.GRPC
-		backendRef *gwapiv1.BackendObjectReference
+		backendRef *gwv1b1.BackendObjectReference
 		protocol   ir.AppProtocol
 		ds         *ir.DestinationSetting
 		authority  string
@@ -841,7 +840,7 @@ func (t *Translator) buildExtAuth(
 
 // TODO: zhaohuabing combine this function with the one in the route translator
 func (t *Translator) processExtServiceDestination(
-	backendRef *gwapiv1.BackendObjectReference,
+	backendRef *gwv1b1.BackendObjectReference,
 	policy *egv1a1.SecurityPolicy,
 	protocol ir.AppProtocol,
 	resources *Resources) (*ir.DestinationSetting, error) {
@@ -894,10 +893,10 @@ func (t *Translator) processExtServiceDestination(
 		// relationship between the security policy and a gateway.
 		// The owner security policy of the BackendRef is used as the parent reference here.
 		gwv1a2.ParentReference{
-			Group:     ptr.To(gwapiv1.Group(egv1a1.GroupName)),
-			Kind:      ptr.To(gwapiv1.Kind(egv1a1.KindSecurityPolicy)),
-			Namespace: ptr.To(gwapiv1.Namespace(policy.Namespace)),
-			Name:      gwapiv1.ObjectName(policy.Name),
+			Group:     ptr.To(gwv1b1.Group(egv1a1.GroupName)),
+			Kind:      ptr.To(gwv1b1.Kind(egv1a1.KindSecurityPolicy)),
+			Namespace: ptr.To(gwv1b1.Namespace(policy.Namespace)),
+			Name:      gwv1b1.ObjectName(policy.Name),
 		},
 		resources)
 
@@ -910,7 +909,7 @@ func (t *Translator) processExtServiceDestination(
 	}, nil
 }
 
-func irExtServiceDestinationName(policy *egv1a1.SecurityPolicy, backendRef *gwapiv1.BackendObjectReference) string {
+func irExtServiceDestinationName(policy *egv1a1.SecurityPolicy, backendRef *gwv1b1.BackendObjectReference) string {
 	nn := types.NamespacedName{
 		Name:      string(backendRef.Name),
 		Namespace: NamespaceDerefOr(backendRef.Namespace, policy.Namespace),

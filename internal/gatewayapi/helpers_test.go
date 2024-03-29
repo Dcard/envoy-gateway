@@ -16,8 +16,9 @@ import (
 
 	"github.com/stretchr/testify/require"
 	"k8s.io/apimachinery/pkg/runtime/schema"
+	gwapiv1 "sigs.k8s.io/gateway-api/apis/v1"
 	gwapiv1a2 "sigs.k8s.io/gateway-api/apis/v1alpha2"
-	gwapiv1 "sigs.k8s.io/gateway-api/apis/v1beta1"
+	gwapiv1b1 "sigs.k8s.io/gateway-api/apis/v1beta1"
 )
 
 func TestValidateGRPCFilterRef(t *testing.T) {
@@ -51,7 +52,7 @@ func TestValidateGRPCFilterRef(t *testing.T) {
 			name: "valid extension resource",
 			filter: &gwapiv1a2.GRPCRouteFilter{
 				Type: gwapiv1a2.GRPCRouteFilterExtensionRef,
-				ExtensionRef: &gwapiv1.LocalObjectReference{
+				ExtensionRef: &gwapiv1b1.LocalObjectReference{
 					Group: "example.io",
 					Kind:  "Foo",
 					Name:  "test",
@@ -63,7 +64,7 @@ func TestValidateGRPCFilterRef(t *testing.T) {
 			name: "unsupported extended filter",
 			filter: &gwapiv1a2.GRPCRouteFilter{
 				Type: gwapiv1a2.GRPCRouteFilterExtensionRef,
-				ExtensionRef: &gwapiv1.LocalObjectReference{
+				ExtensionRef: &gwapiv1b1.LocalObjectReference{
 					Group: "UnsupportedGroup",
 					Kind:  "UnsupportedKind",
 					Name:  "test",
@@ -82,7 +83,7 @@ func TestValidateGRPCFilterRef(t *testing.T) {
 			name: "invalid filter type",
 			filter: &gwapiv1a2.GRPCRouteFilter{
 				Type: "Invalid",
-				ExtensionRef: &gwapiv1.LocalObjectReference{
+				ExtensionRef: &gwapiv1b1.LocalObjectReference{
 					Group: "example.io",
 					Kind:  "Foo",
 					Name:  "test",
@@ -107,42 +108,42 @@ func TestValidateGRPCFilterRef(t *testing.T) {
 func TestValidateHTTPFilterRef(t *testing.T) {
 	testCases := []struct {
 		name     string
-		filter   *gwapiv1.HTTPRouteFilter
+		filter   *gwapiv1b1.HTTPRouteFilter
 		expected bool
 	}{
 		{
 			name: "request mirror filter",
-			filter: &gwapiv1.HTTPRouteFilter{
+			filter: &gwapiv1b1.HTTPRouteFilter{
 				Type: gwapiv1.HTTPRouteFilterRequestMirror,
 			},
 			expected: true,
 		},
 		{
 			name: "url rewrite filter",
-			filter: &gwapiv1.HTTPRouteFilter{
+			filter: &gwapiv1b1.HTTPRouteFilter{
 				Type: gwapiv1.HTTPRouteFilterURLRewrite,
 			},
 			expected: true,
 		},
 		{
 			name: "request header modifier filter",
-			filter: &gwapiv1.HTTPRouteFilter{
+			filter: &gwapiv1b1.HTTPRouteFilter{
 				Type: gwapiv1.HTTPRouteFilterRequestHeaderModifier,
 			},
 			expected: true,
 		},
 		{
 			name: "request redirect filter",
-			filter: &gwapiv1.HTTPRouteFilter{
+			filter: &gwapiv1b1.HTTPRouteFilter{
 				Type: gwapiv1.HTTPRouteFilterRequestRedirect,
 			},
 			expected: true,
 		},
 		{
 			name: "unsupported extended filter",
-			filter: &gwapiv1.HTTPRouteFilter{
+			filter: &gwapiv1b1.HTTPRouteFilter{
 				Type: gwapiv1.HTTPRouteFilterExtensionRef,
-				ExtensionRef: &gwapiv1.LocalObjectReference{
+				ExtensionRef: &gwapiv1b1.LocalObjectReference{
 					Group: "UnsupportedGroup",
 					Kind:  "UnsupportedKind",
 					Name:  "test",
@@ -152,16 +153,16 @@ func TestValidateHTTPFilterRef(t *testing.T) {
 		},
 		{
 			name: "extended filter with missing reference",
-			filter: &gwapiv1.HTTPRouteFilter{
+			filter: &gwapiv1b1.HTTPRouteFilter{
 				Type: gwapiv1.HTTPRouteFilterExtensionRef,
 			},
 			expected: false,
 		},
 		{
 			name: "valid extension resource",
-			filter: &gwapiv1.HTTPRouteFilter{
+			filter: &gwapiv1b1.HTTPRouteFilter{
 				Type: gwapiv1.HTTPRouteFilterExtensionRef,
-				ExtensionRef: &gwapiv1.LocalObjectReference{
+				ExtensionRef: &gwapiv1b1.LocalObjectReference{
 					Group: "example.io",
 					Kind:  "Foo",
 					Name:  "test",
@@ -171,9 +172,9 @@ func TestValidateHTTPFilterRef(t *testing.T) {
 		},
 		{
 			name: "invalid filter type",
-			filter: &gwapiv1.HTTPRouteFilter{
+			filter: &gwapiv1b1.HTTPRouteFilter{
 				Type: "Invalid",
-				ExtensionRef: &gwapiv1.LocalObjectReference{
+				ExtensionRef: &gwapiv1b1.LocalObjectReference{
 					Group: "example.io",
 					Kind:  "Foo",
 					Name:  "test",

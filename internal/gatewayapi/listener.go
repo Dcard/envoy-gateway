@@ -9,7 +9,8 @@ import (
 	"fmt"
 
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
-	gwapiv1 "sigs.k8s.io/gateway-api/apis/v1beta1"
+	gwapiv1 "sigs.k8s.io/gateway-api/apis/v1"
+	gwapiv1b1 "sigs.k8s.io/gateway-api/apis/v1beta1"
 
 	egv1a1 "github.com/envoyproxy/gateway/api/v1alpha1"
 	"github.com/envoyproxy/gateway/internal/ir"
@@ -234,7 +235,7 @@ func processAccessLog(envoyproxy *egv1a1.EnvoyProxy) *ir.AccessLog {
 	return irAccessLog
 }
 
-func processTracing(gw *gwapiv1.Gateway, envoyproxy *egv1a1.EnvoyProxy) *ir.Tracing {
+func processTracing(gw *gwapiv1b1.Gateway, envoyproxy *egv1a1.EnvoyProxy) *ir.Tracing {
 	if envoyproxy == nil ||
 		envoyproxy.Spec.Telemetry == nil ||
 		envoyproxy.Spec.Telemetry.Tracing == nil {

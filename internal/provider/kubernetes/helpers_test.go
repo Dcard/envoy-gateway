@@ -10,7 +10,8 @@ import (
 
 	"github.com/stretchr/testify/require"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
-	gwapiv1 "sigs.k8s.io/gateway-api/apis/v1beta1"
+	gwapiv1 "sigs.k8s.io/gateway-api/apis/v1"
+	gwapiv1b1 "sigs.k8s.io/gateway-api/apis/v1beta1"
 
 	egv1a1 "github.com/envoyproxy/gateway/api/v1alpha1"
 	"github.com/envoyproxy/gateway/internal/envoygateway/config"
@@ -18,26 +19,26 @@ import (
 )
 
 func TestGatewaysOfClass(t *testing.T) {
-	gc := &gwapiv1.GatewayClass{
+	gc := &gwapiv1b1.GatewayClass{
 		ObjectMeta: metav1.ObjectMeta{
 			Name: "test",
 		},
 	}
 	testCases := []struct {
 		name   string
-		gws    []gwapiv1.Gateway
+		gws    []gwapiv1b1.Gateway
 		expect int
 	}{
 		{
 			name: "no matching gateways",
-			gws: []gwapiv1.Gateway{
+			gws: []gwapiv1b1.Gateway{
 				{
 					ObjectMeta: metav1.ObjectMeta{
 						Name:      "test",
 						Namespace: "test",
 					},
-					Spec: gwapiv1.GatewaySpec{
-						GatewayClassName: gwapiv1.ObjectName("no-match"),
+					Spec: gwapiv1b1.GatewaySpec{
+						GatewayClassName: gwapiv1b1.ObjectName("no-match"),
 					},
 				},
 				{
@@ -45,8 +46,8 @@ func TestGatewaysOfClass(t *testing.T) {
 						Name:      "test",
 						Namespace: "test",
 					},
-					Spec: gwapiv1.GatewaySpec{
-						GatewayClassName: gwapiv1.ObjectName("no-match2"),
+					Spec: gwapiv1b1.GatewaySpec{
+						GatewayClassName: gwapiv1b1.ObjectName("no-match2"),
 					},
 				},
 			},
@@ -54,14 +55,14 @@ func TestGatewaysOfClass(t *testing.T) {
 		},
 		{
 			name: "one of two matching gateways",
-			gws: []gwapiv1.Gateway{
+			gws: []gwapiv1b1.Gateway{
 				{
 					ObjectMeta: metav1.ObjectMeta{
 						Name:      "test",
 						Namespace: "test",
 					},
-					Spec: gwapiv1.GatewaySpec{
-						GatewayClassName: gwapiv1.ObjectName(gc.Name),
+					Spec: gwapiv1b1.GatewaySpec{
+						GatewayClassName: gwapiv1b1.ObjectName(gc.Name),
 					},
 				},
 				{
@@ -69,8 +70,8 @@ func TestGatewaysOfClass(t *testing.T) {
 						Name:      "test2",
 						Namespace: "test",
 					},
-					Spec: gwapiv1.GatewaySpec{
-						GatewayClassName: gwapiv1.ObjectName("no-match"),
+					Spec: gwapiv1b1.GatewaySpec{
+						GatewayClassName: gwapiv1b1.ObjectName("no-match"),
 					},
 				},
 			},
@@ -78,14 +79,14 @@ func TestGatewaysOfClass(t *testing.T) {
 		},
 		{
 			name: "two of two matching gateways",
-			gws: []gwapiv1.Gateway{
+			gws: []gwapiv1b1.Gateway{
 				{
 					ObjectMeta: metav1.ObjectMeta{
 						Name:      "test",
 						Namespace: "test",
 					},
-					Spec: gwapiv1.GatewaySpec{
-						GatewayClassName: gwapiv1.ObjectName(gc.Name),
+					Spec: gwapiv1b1.GatewaySpec{
+						GatewayClassName: gwapiv1b1.ObjectName(gc.Name),
 					},
 				},
 				{
@@ -93,8 +94,8 @@ func TestGatewaysOfClass(t *testing.T) {
 						Name:      "test2",
 						Namespace: "test",
 					},
-					Spec: gwapiv1.GatewaySpec{
-						GatewayClassName: gwapiv1.ObjectName(gc.Name),
+					Spec: gwapiv1b1.GatewaySpec{
+						GatewayClassName: gwapiv1b1.ObjectName(gc.Name),
 					},
 				},
 			},
@@ -105,7 +106,7 @@ func TestGatewaysOfClass(t *testing.T) {
 	for _, tc := range testCases {
 		tc := tc
 		t.Run(tc.name, func(t *testing.T) {
-			gwList := &gwapiv1.GatewayList{Items: tc.gws}
+			gwList := &gwapiv1b1.GatewayList{Items: tc.gws}
 			actual := gatewaysOfClass(gc, gwList)
 			require.Len(t, actual, tc.expect)
 		})
@@ -115,19 +116,19 @@ func TestGatewaysOfClass(t *testing.T) {
 func TestIsGatewayClassAccepted(t *testing.T) {
 	testCases := []struct {
 		name   string
-		gc     *gwapiv1.GatewayClass
+		gc     *gwapiv1b1.GatewayClass
 		expect bool
 	}{
 		{
 			name: "gatewayclass accepted condition",
-			gc: &gwapiv1.GatewayClass{
+			gc: &gwapiv1b1.GatewayClass{
 				ObjectMeta: metav1.ObjectMeta{
 					Name: "test",
 				},
-				Spec: gwapiv1.GatewayClassSpec{
-					ControllerName: gwapiv1.GatewayController(egv1a1.GatewayControllerName),
+				Spec: gwapiv1b1.GatewayClassSpec{
+					ControllerName: gwapiv1b1.GatewayController(egv1a1.GatewayControllerName),
 				},
-				Status: gwapiv1.GatewayClassStatus{
+				Status: gwapiv1b1.GatewayClassStatus{
 					Conditions: []metav1.Condition{
 						{
 							Type:   string(gwapiv1.GatewayClassConditionStatusAccepted),
@@ -140,14 +141,14 @@ func TestIsGatewayClassAccepted(t *testing.T) {
 		},
 		{
 			name: "gatewayclass not accepted condition",
-			gc: &gwapiv1.GatewayClass{
+			gc: &gwapiv1b1.GatewayClass{
 				ObjectMeta: metav1.ObjectMeta{
 					Name: "test",
 				},
-				Spec: gwapiv1.GatewayClassSpec{
-					ControllerName: gwapiv1.GatewayController(egv1a1.GatewayControllerName),
+				Spec: gwapiv1b1.GatewayClassSpec{
+					ControllerName: gwapiv1b1.GatewayController(egv1a1.GatewayControllerName),
 				},
-				Status: gwapiv1.GatewayClassStatus{
+				Status: gwapiv1b1.GatewayClassStatus{
 					Conditions: []metav1.Condition{
 						{
 							Type:   string(gwapiv1.GatewayClassConditionStatusAccepted),
@@ -160,14 +161,14 @@ func TestIsGatewayClassAccepted(t *testing.T) {
 		},
 		{
 			name: "no gatewayclass accepted condition type",
-			gc: &gwapiv1.GatewayClass{
+			gc: &gwapiv1b1.GatewayClass{
 				ObjectMeta: metav1.ObjectMeta{
 					Name: "test",
 				},
-				Spec: gwapiv1.GatewayClassSpec{
-					ControllerName: gwapiv1.GatewayController(egv1a1.GatewayControllerName),
+				Spec: gwapiv1b1.GatewayClassSpec{
+					ControllerName: gwapiv1b1.GatewayController(egv1a1.GatewayControllerName),
 				},
-				Status: gwapiv1.GatewayClassStatus{
+				Status: gwapiv1b1.GatewayClassStatus{
 					Conditions: []metav1.Condition{
 						{
 							Type:   "SomeOtherType",
@@ -196,7 +197,7 @@ func TestIsGatewayClassAccepted(t *testing.T) {
 func TestRefsEnvoyProxy(t *testing.T) {
 	testCases := []struct {
 		name   string
-		gc     *gwapiv1.GatewayClass
+		gc     *gwapiv1b1.GatewayClass
 		expect bool
 	}{
 		{
@@ -206,16 +207,16 @@ func TestRefsEnvoyProxy(t *testing.T) {
 		},
 		{
 			name: "valid envoyproxy parameters ref",
-			gc: &gwapiv1.GatewayClass{
+			gc: &gwapiv1b1.GatewayClass{
 				ObjectMeta: metav1.ObjectMeta{
 					Name:      "test",
 					Namespace: "test",
 				},
-				Spec: gwapiv1.GatewayClassSpec{
+				Spec: gwapiv1b1.GatewayClassSpec{
 					ControllerName: "test",
-					ParametersRef: &gwapiv1.ParametersReference{
-						Group:     gwapiv1.Group(egv1a1.GroupVersion.Group),
-						Kind:      gwapiv1.Kind(egv1a1.KindEnvoyProxy),
+					ParametersRef: &gwapiv1b1.ParametersReference{
+						Group:     gwapiv1b1.Group(egv1a1.GroupVersion.Group),
+						Kind:      gwapiv1b1.Kind(egv1a1.KindEnvoyProxy),
 						Name:      "test",
 						Namespace: gatewayapi.NamespacePtr(config.DefaultNamespace),
 					},
@@ -225,12 +226,12 @@ func TestRefsEnvoyProxy(t *testing.T) {
 		},
 		{
 			name: "unspecified parameters ref",
-			gc: &gwapiv1.GatewayClass{
+			gc: &gwapiv1b1.GatewayClass{
 				ObjectMeta: metav1.ObjectMeta{
 					Name:      "test",
 					Namespace: "test",
 				},
-				Spec: gwapiv1.GatewayClassSpec{
+				Spec: gwapiv1b1.GatewayClassSpec{
 					ControllerName: "test",
 				},
 			},
@@ -238,16 +239,16 @@ func TestRefsEnvoyProxy(t *testing.T) {
 		},
 		{
 			name: "unsupported group parameters ref",
-			gc: &gwapiv1.GatewayClass{
+			gc: &gwapiv1b1.GatewayClass{
 				ObjectMeta: metav1.ObjectMeta{
 					Name:      "test",
 					Namespace: "test",
 				},
-				Spec: gwapiv1.GatewayClassSpec{
+				Spec: gwapiv1b1.GatewayClassSpec{
 					ControllerName: "test",
-					ParametersRef: &gwapiv1.ParametersReference{
-						Group:     gwapiv1.Group("Unsupported"),
-						Kind:      gwapiv1.Kind(egv1a1.KindEnvoyProxy),
+					ParametersRef: &gwapiv1b1.ParametersReference{
+						Group:     gwapiv1b1.Group("Unsupported"),
+						Kind:      gwapiv1b1.Kind(egv1a1.KindEnvoyProxy),
 						Name:      "test",
 						Namespace: gatewayapi.NamespacePtr(config.DefaultNamespace),
 					},
@@ -257,16 +258,16 @@ func TestRefsEnvoyProxy(t *testing.T) {
 		},
 		{
 			name: "unsupported group parameters ref",
-			gc: &gwapiv1.GatewayClass{
+			gc: &gwapiv1b1.GatewayClass{
 				ObjectMeta: metav1.ObjectMeta{
 					Name:      "test",
 					Namespace: "test",
 				},
-				Spec: gwapiv1.GatewayClassSpec{
+				Spec: gwapiv1b1.GatewayClassSpec{
 					ControllerName: "test",
-					ParametersRef: &gwapiv1.ParametersReference{
-						Group:     gwapiv1.Group(egv1a1.GroupVersion.Group),
-						Kind:      gwapiv1.Kind("Unsupported"),
+					ParametersRef: &gwapiv1b1.ParametersReference{
+						Group:     gwapiv1b1.Group(egv1a1.GroupVersion.Group),
+						Kind:      gwapiv1b1.Kind("Unsupported"),
 						Name:      "test",
 						Namespace: gatewayapi.NamespacePtr(config.DefaultNamespace),
 					},
@@ -276,16 +277,16 @@ func TestRefsEnvoyProxy(t *testing.T) {
 		},
 		{
 			name: "unsupported group parameters ref",
-			gc: &gwapiv1.GatewayClass{
+			gc: &gwapiv1b1.GatewayClass{
 				ObjectMeta: metav1.ObjectMeta{
 					Name:      "test",
 					Namespace: "test",
 				},
-				Spec: gwapiv1.GatewayClassSpec{
+				Spec: gwapiv1b1.GatewayClassSpec{
 					ControllerName: "test",
-					ParametersRef: &gwapiv1.ParametersReference{
-						Group:     gwapiv1.Group(egv1a1.GroupVersion.Group),
-						Kind:      gwapiv1.Kind("Unsupported"),
+					ParametersRef: &gwapiv1b1.ParametersReference{
+						Group:     gwapiv1b1.Group(egv1a1.GroupVersion.Group),
+						Kind:      gwapiv1b1.Kind("Unsupported"),
 						Name:      "test",
 						Namespace: gatewayapi.NamespacePtr(config.DefaultNamespace),
 					},
@@ -295,16 +296,16 @@ func TestRefsEnvoyProxy(t *testing.T) {
 		},
 		{
 			name: "empty parameters ref name",
-			gc: &gwapiv1.GatewayClass{
+			gc: &gwapiv1b1.GatewayClass{
 				ObjectMeta: metav1.ObjectMeta{
 					Name:      "test",
 					Namespace: "test",
 				},
-				Spec: gwapiv1.GatewayClassSpec{
+				Spec: gwapiv1b1.GatewayClassSpec{
 					ControllerName: "test",
-					ParametersRef: &gwapiv1.ParametersReference{
-						Group:     gwapiv1.Group(egv1a1.GroupVersion.Group),
-						Kind:      gwapiv1.Kind(egv1a1.KindEnvoyProxy),
+					ParametersRef: &gwapiv1b1.ParametersReference{
+						Group:     gwapiv1b1.Group(egv1a1.GroupVersion.Group),
+						Kind:      gwapiv1b1.Kind(egv1a1.KindEnvoyProxy),
 						Name:      "",
 						Namespace: gatewayapi.NamespacePtr(config.DefaultNamespace),
 					},
@@ -314,16 +315,16 @@ func TestRefsEnvoyProxy(t *testing.T) {
 		},
 		{
 			name: "unspecified parameters ref namespace",
-			gc: &gwapiv1.GatewayClass{
+			gc: &gwapiv1b1.GatewayClass{
 				ObjectMeta: metav1.ObjectMeta{
 					Name:      "test",
 					Namespace: "test",
 				},
-				Spec: gwapiv1.GatewayClassSpec{
+				Spec: gwapiv1b1.GatewayClassSpec{
 					ControllerName: "test",
-					ParametersRef: &gwapiv1.ParametersReference{
-						Group: gwapiv1.Group(egv1a1.GroupVersion.Group),
-						Kind:  gwapiv1.Kind(egv1a1.KindEnvoyProxy),
+					ParametersRef: &gwapiv1b1.ParametersReference{
+						Group: gwapiv1b1.Group(egv1a1.GroupVersion.Group),
+						Kind:  gwapiv1b1.Kind(egv1a1.KindEnvoyProxy),
 						Name:  "test",
 					},
 				},
@@ -342,11 +343,11 @@ func TestRefsEnvoyProxy(t *testing.T) {
 }
 
 func TestClassRefsEnvoyProxy(t *testing.T) {
-	gcCtrlName := gwapiv1.GatewayController(egv1a1.GatewayControllerName)
+	gcCtrlName := gwapiv1b1.GatewayController(egv1a1.GatewayControllerName)
 
 	testCases := []struct {
 		name     string
-		gc       *gwapiv1.GatewayClass
+		gc       *gwapiv1b1.GatewayClass
 		ep       *egv1a1.EnvoyProxy
 		expected bool
 	}{
@@ -358,15 +359,15 @@ func TestClassRefsEnvoyProxy(t *testing.T) {
 		},
 		{
 			name: "gatewayclass references envoyproxy",
-			gc: &gwapiv1.GatewayClass{
+			gc: &gwapiv1b1.GatewayClass{
 				ObjectMeta: metav1.ObjectMeta{
 					Name: "test-gc",
 				},
-				Spec: gwapiv1.GatewayClassSpec{
+				Spec: gwapiv1b1.GatewayClassSpec{
 					ControllerName: gcCtrlName,
-					ParametersRef: &gwapiv1.ParametersReference{
-						Group:     gwapiv1.Group(egv1a1.GroupVersion.Group),
-						Kind:      gwapiv1.Kind(egv1a1.KindEnvoyProxy),
+					ParametersRef: &gwapiv1b1.ParametersReference{
+						Group:     gwapiv1b1.Group(egv1a1.GroupVersion.Group),
+						Kind:      gwapiv1b1.Kind(egv1a1.KindEnvoyProxy),
 						Name:      "test-ep",
 						Namespace: gatewayapi.NamespacePtr(config.DefaultNamespace),
 					},
@@ -382,15 +383,15 @@ func TestClassRefsEnvoyProxy(t *testing.T) {
 		},
 		{
 			name: "gatewayclass does not reference envoyproxy",
-			gc: &gwapiv1.GatewayClass{
+			gc: &gwapiv1b1.GatewayClass{
 				ObjectMeta: metav1.ObjectMeta{
 					Name: "test-gc",
 				},
-				Spec: gwapiv1.GatewayClassSpec{
+				Spec: gwapiv1b1.GatewayClassSpec{
 					ControllerName: gcCtrlName,
-					ParametersRef: &gwapiv1.ParametersReference{
-						Group:     gwapiv1.Group(egv1a1.GroupVersion.Group),
-						Kind:      gwapiv1.Kind(egv1a1.KindEnvoyProxy),
+					ParametersRef: &gwapiv1b1.ParametersReference{
+						Group:     gwapiv1b1.Group(egv1a1.GroupVersion.Group),
+						Kind:      gwapiv1b1.Kind(egv1a1.KindEnvoyProxy),
 						Name:      "not-test-ep",
 						Namespace: gatewayapi.NamespacePtr(config.DefaultNamespace),
 					},
@@ -406,15 +407,15 @@ func TestClassRefsEnvoyProxy(t *testing.T) {
 		},
 		{
 			name: "gatewayclass references invalid kind",
-			gc: &gwapiv1.GatewayClass{
+			gc: &gwapiv1b1.GatewayClass{
 				ObjectMeta: metav1.ObjectMeta{
 					Name: "test-gc",
 				},
-				Spec: gwapiv1.GatewayClassSpec{
+				Spec: gwapiv1b1.GatewayClassSpec{
 					ControllerName: gcCtrlName,
-					ParametersRef: &gwapiv1.ParametersReference{
-						Group:     gwapiv1.Group(egv1a1.GroupVersion.Group),
-						Kind:      gwapiv1.Kind("UnsupportedKind"),
+					ParametersRef: &gwapiv1b1.ParametersReference{
+						Group:     gwapiv1b1.Group(egv1a1.GroupVersion.Group),
+						Kind:      gwapiv1b1.Kind("UnsupportedKind"),
 						Name:      "test-ep",
 						Namespace: gatewayapi.NamespacePtr(config.DefaultNamespace),
 					},
@@ -430,15 +431,15 @@ func TestClassRefsEnvoyProxy(t *testing.T) {
 		},
 		{
 			name: "gatewayclass references invalid group",
-			gc: &gwapiv1.GatewayClass{
+			gc: &gwapiv1b1.GatewayClass{
 				ObjectMeta: metav1.ObjectMeta{
 					Name: "test-gc",
 				},
-				Spec: gwapiv1.GatewayClassSpec{
+				Spec: gwapiv1b1.GatewayClassSpec{
 					ControllerName: gcCtrlName,
-					ParametersRef: &gwapiv1.ParametersReference{
-						Group:     gwapiv1.Group("UnsupportedGroup"),
-						Kind:      gwapiv1.Kind(egv1a1.KindEnvoyProxy),
+					ParametersRef: &gwapiv1b1.ParametersReference{
+						Group:     gwapiv1b1.Group("UnsupportedGroup"),
+						Kind:      gwapiv1b1.Kind(egv1a1.KindEnvoyProxy),
 						Name:      "test-ep",
 						Namespace: gatewayapi.NamespacePtr(config.DefaultNamespace),
 					},
@@ -454,15 +455,15 @@ func TestClassRefsEnvoyProxy(t *testing.T) {
 		},
 		{
 			name: "gatewayclass references envoyproxy without namespace",
-			gc: &gwapiv1.GatewayClass{
+			gc: &gwapiv1b1.GatewayClass{
 				ObjectMeta: metav1.ObjectMeta{
 					Name: "test-gc",
 				},
-				Spec: gwapiv1.GatewayClassSpec{
+				Spec: gwapiv1b1.GatewayClassSpec{
 					ControllerName: gcCtrlName,
-					ParametersRef: &gwapiv1.ParametersReference{
-						Group: gwapiv1.Group(egv1a1.GroupVersion.Group),
-						Kind:  gwapiv1.Kind(egv1a1.KindEnvoyProxy),
+					ParametersRef: &gwapiv1b1.ParametersReference{
+						Group: gwapiv1b1.Group(egv1a1.GroupVersion.Group),
+						Kind:  gwapiv1b1.Kind(egv1a1.KindEnvoyProxy),
 						Name:  "test-ep",
 					},
 				},
@@ -490,11 +491,11 @@ func TestClassRefsEnvoyProxy(t *testing.T) {
 }
 
 func TestClassAccepted(t *testing.T) {
-	gcCtrlName := gwapiv1.GatewayController(egv1a1.GatewayControllerName)
+	gcCtrlName := gwapiv1b1.GatewayController(egv1a1.GatewayControllerName)
 
 	testCases := []struct {
 		name     string
-		gc       *gwapiv1.GatewayClass
+		gc       *gwapiv1b1.GatewayClass
 		expected bool
 	}{
 		{
@@ -504,14 +505,14 @@ func TestClassAccepted(t *testing.T) {
 		},
 		{
 			name: "gatewayclass accepted",
-			gc: &gwapiv1.GatewayClass{
+			gc: &gwapiv1b1.GatewayClass{
 				ObjectMeta: metav1.ObjectMeta{
 					Name: "test-gc",
 				},
-				Spec: gwapiv1.GatewayClassSpec{
+				Spec: gwapiv1b1.GatewayClassSpec{
 					ControllerName: gcCtrlName,
 				},
-				Status: gwapiv1.GatewayClassStatus{
+				Status: gwapiv1b1.GatewayClassStatus{
 					Conditions: []metav1.Condition{
 						{
 							Type:   string(gwapiv1.GatewayClassConditionStatusAccepted),
@@ -524,14 +525,14 @@ func TestClassAccepted(t *testing.T) {
 		},
 		{
 			name: "gatewayclass not accepted",
-			gc: &gwapiv1.GatewayClass{
+			gc: &gwapiv1b1.GatewayClass{
 				ObjectMeta: metav1.ObjectMeta{
 					Name: "test-gc",
 				},
-				Spec: gwapiv1.GatewayClassSpec{
+				Spec: gwapiv1b1.GatewayClassSpec{
 					ControllerName: gcCtrlName,
 				},
-				Status: gwapiv1.GatewayClassStatus{
+				Status: gwapiv1b1.GatewayClassStatus{
 					Conditions: []metav1.Condition{
 						{
 							Type:   string(gwapiv1.GatewayClassConditionStatusAccepted),
