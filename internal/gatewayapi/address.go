@@ -6,7 +6,7 @@
 package gatewayapi
 
 import (
-	v1 "sigs.k8s.io/gateway-api/apis/v1"
+	v1 "sigs.k8s.io/gateway-api/apis/v1beta1"
 )
 
 var _ AddressesTranslator = (*Translator)(nil)

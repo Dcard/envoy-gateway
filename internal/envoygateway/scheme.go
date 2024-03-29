@@ -8,8 +8,8 @@ package envoygateway
 import (
 	"k8s.io/apimachinery/pkg/runtime"
 	clientgoscheme "k8s.io/client-go/kubernetes/scheme"
-	gwapiv1 "sigs.k8s.io/gateway-api/apis/v1"
 	gwapiv1a2 "sigs.k8s.io/gateway-api/apis/v1alpha2"
+	gwapiv1 "sigs.k8s.io/gateway-api/apis/v1beta1"
 	gwapiv1b1 "sigs.k8s.io/gateway-api/apis/v1beta1"
 	mcsapi "sigs.k8s.io/mcs-api/pkg/apis/v1alpha1"
 

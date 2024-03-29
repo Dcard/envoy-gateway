@@ -9,7 +9,7 @@ import (
 	appsv1 "k8s.io/api/apps/v1"
 	corev1 "k8s.io/api/core/v1"
 	"k8s.io/utils/ptr"
-	gwapiv1 "sigs.k8s.io/gateway-api/apis/v1"
+	gwapiv1 "sigs.k8s.io/gateway-api/apis/v1beta1"
 )
 
 // UpdateGatewayStatusAcceptedCondition updates the status condition for the provided Gateway based on the accepted state.

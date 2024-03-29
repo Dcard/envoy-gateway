@@ -6,7 +6,7 @@
 package v1alpha1
 
 import (
-	gwapiv1 "sigs.k8s.io/gateway-api/apis/v1"
+	gwapiv1 "sigs.k8s.io/gateway-api/apis/v1beta1"
 )
 
 // +kubebuilder:validation:XValidation:rule="(has(self.grpc) || has(self.http))",message="one of grpc or http must be specified"

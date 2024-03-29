@@ -10,7 +10,7 @@ import (
 	"fmt"
 	"net/url"
 
-	gwapiv1 "sigs.k8s.io/gateway-api/apis/v1"
+	gwapiv1 "sigs.k8s.io/gateway-api/apis/v1beta1"
 
 	"github.com/envoyproxy/gateway/api/v1alpha1"
 )

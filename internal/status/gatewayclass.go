@@ -14,7 +14,7 @@
 package status
 
 import (
-	gwapiv1 "sigs.k8s.io/gateway-api/apis/v1"
+	gwapiv1 "sigs.k8s.io/gateway-api/apis/v1beta1"
 )
 
 // SetGatewayClassAccepted inserts or updates the Accepted condition

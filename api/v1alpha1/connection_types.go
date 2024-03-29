@@ -5,7 +5,7 @@
 
 package v1alpha1
 
-import gwapiv1 "sigs.k8s.io/gateway-api/apis/v1"
+import gwapiv1 "sigs.k8s.io/gateway-api/apis/v1beta1"
 
 // Connection allows users to configure connection-level settings
 type Connection struct {

@@ -12,7 +12,7 @@ import (
 	"time"
 
 	corev1 "k8s.io/api/core/v1"
-	v1 "sigs.k8s.io/gateway-api/apis/v1"
+	v1 "sigs.k8s.io/gateway-api/apis/v1beta1"
 )
 
 // validateTLSSecretData ensures the cert and key provided in a secret

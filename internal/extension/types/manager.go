@@ -6,7 +6,7 @@
 package types
 
 import (
-	v1 "sigs.k8s.io/gateway-api/apis/v1"
+	v1 "sigs.k8s.io/gateway-api/apis/v1beta1"
 
 	"github.com/envoyproxy/gateway/api/v1alpha1"
 )
