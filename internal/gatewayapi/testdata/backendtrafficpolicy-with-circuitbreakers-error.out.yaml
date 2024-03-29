@@ -86,7 +86,7 @@ backendTrafficPolicies:
         type: Accepted
       controllerName: gateway.envoyproxy.io/gatewayclass-controller
 gateways:
-- apiVersion: gateway.networking.k8s.io/v1
+- apiVersion: gateway.networking.k8s.io/v1beta1
   kind: Gateway
   metadata:
     creationTimestamp: null
@@ -126,7 +126,7 @@ gateways:
         kind: HTTPRoute
       - group: gateway.networking.k8s.io
         kind: GRPCRoute
-- apiVersion: gateway.networking.k8s.io/v1
+- apiVersion: gateway.networking.k8s.io/v1beta1
   kind: Gateway
   metadata:
     creationTimestamp: null
@@ -201,7 +201,7 @@ grpcRoutes:
         namespace: envoy-gateway
         sectionName: http
 httpRoutes:
-- apiVersion: gateway.networking.k8s.io/v1
+- apiVersion: gateway.networking.k8s.io/v1beta1
   kind: HTTPRoute
   metadata:
     creationTimestamp: null
@@ -239,7 +239,7 @@ httpRoutes:
         name: gateway-2
         namespace: envoy-gateway
         sectionName: http
-- apiVersion: gateway.networking.k8s.io/v1
+- apiVersion: gateway.networking.k8s.io/v1beta1
   kind: HTTPRoute
   metadata:
     creationTimestamp: null

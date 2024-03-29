@@ -20,6 +20,7 @@ import (
 	"sigs.k8s.io/controller-runtime/pkg/client"
 	gwv1 "sigs.k8s.io/gateway-api/apis/v1"
 	gwv1a2 "sigs.k8s.io/gateway-api/apis/v1alpha2"
+	gwv1b1 "sigs.k8s.io/gateway-api/apis/v1beta1"
 
 	egv1a1 "github.com/envoyproxy/gateway/api/v1alpha1"
 )
@@ -133,7 +134,7 @@ func runStatus(ctx context.Context, cli client.Client, resourceType, namespace s
 		resourcesList = &gtw
 
 	case "httproute":
-		httproute := gwv1.HTTPRouteList{}
+		httproute := gwv1b1.HTTPRouteList{}
 		if err := cli.List(ctx, &httproute, client.InNamespace(namespace)); err != nil {
 			return err
 		}

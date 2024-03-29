@@ -15,6 +15,7 @@ import (
 	"sigs.k8s.io/controller-runtime/pkg/client"
 	gwv1 "sigs.k8s.io/gateway-api/apis/v1"
 	gwv1a2 "sigs.k8s.io/gateway-api/apis/v1alpha2"
+	gwv1b1 "sigs.k8s.io/gateway-api/apis/v1beta1"
 )
 
 func TestWriteStatus(t *testing.T) {
@@ -35,7 +36,7 @@ func TestWriteStatus(t *testing.T) {
 	}{
 		{
 			name:               "egctl x status gc -v, but no resources",
-			resourceList:       &gwv1.GatewayClassList{},
+			resourceList:       &gwv1b1.GatewayClassList{},
 			resourceNamespaced: false,
 			resourceType:       "gatewayclass",
 			quiet:              false,
@@ -48,8 +49,8 @@ func TestWriteStatus(t *testing.T) {
 		},
 		{
 			name: "egctl x status gc",
-			resourceList: &gwv1.GatewayClassList{
-				Items: []gwv1.GatewayClass{
+			resourceList: &gwv1b1.GatewayClassList{
+				Items: []gwv1b1.GatewayClass{
 					{
 						ObjectMeta: metav1.ObjectMeta{
 							Name: "gc",
@@ -91,8 +92,8 @@ gc        foobar2   test-status-2   test reason 2
 		},
 		{
 			name: "egctl x status gc -v",
-			resourceList: &gwv1.GatewayClassList{
-				Items: []gwv1.GatewayClass{
+			resourceList: &gwv1b1.GatewayClassList{
+				Items: []gwv1b1.GatewayClass{
 					{
 						ObjectMeta: metav1.ObjectMeta{
 							Name: "gc",
@@ -134,8 +135,8 @@ gc        foobar2   test-status-2   test reason 2   test message 2   123457     
 		},
 		{
 			name: "egctl x status gc -v -q",
-			resourceList: &gwv1.GatewayClassList{
-				Items: []gwv1.GatewayClass{
+			resourceList: &gwv1b1.GatewayClassList{
+				Items: []gwv1b1.GatewayClass{
 					{
 						ObjectMeta: metav1.ObjectMeta{
 							Name: "gc",
@@ -176,7 +177,7 @@ gc        foobar2   test-status-2   test reason 2   test message 2   123457     
 		},
 		{
 			name:               "egctl x status gtw -v -A, no resources",
-			resourceList:       &gwv1.GatewayList{},
+			resourceList:       &gwv1b1.GatewayList{},
 			resourceNamespaced: true,
 			resourceType:       "gateway",
 			quiet:              false,
@@ -189,8 +190,8 @@ gc        foobar2   test-status-2   test reason 2   test message 2   123457     
 		},
 		{
 			name: "egctl x status gtw -v -A",
-			resourceList: &gwv1.GatewayList{
-				Items: []gwv1.Gateway{
+			resourceList: &gwv1b1.GatewayList{
+				Items: []gwv1b1.Gateway{
 					{
 						ObjectMeta: metav1.ObjectMeta{
 							Name:      "gtw",
@@ -233,8 +234,8 @@ default     gtw       foobar2   test-status-2   test reason 2   test message 2  
 		},
 		{
 			name: "egctl x status gtw -v -q -A",
-			resourceList: &gwv1.GatewayList{
-				Items: []gwv1.Gateway{
+			resourceList: &gwv1b1.GatewayList{
+				Items: []gwv1b1.Gateway{
 					{
 						ObjectMeta: metav1.ObjectMeta{
 							Name:      "gtw1",
@@ -303,8 +304,8 @@ default2    gtw2      foobar4   test-status-4   test reason 4   test message 4  
 		},
 		{
 			name: "egctl x status httproute -A",
-			resourceList: &gwv1.HTTPRouteList{
-				Items: []gwv1.HTTPRoute{
+			resourceList: &gwv1b1.HTTPRouteList{
+				Items: []gwv1b1.HTTPRoute{
 					{
 						ObjectMeta: metav1.ObjectMeta{
 							Name:      "http1",
@@ -387,8 +388,8 @@ default2    http2     foobar4   test-status-4   test reason 4
 		},
 		{
 			name: "egctl x status httproute -q -n default1",
-			resourceList: &gwv1.HTTPRouteList{
-				Items: []gwv1.HTTPRoute{
+			resourceList: &gwv1b1.HTTPRouteList{
+				Items: []gwv1b1.HTTPRoute{
 					{
 						ObjectMeta: metav1.ObjectMeta{
 							Name:      "http1",

@@ -44,7 +44,7 @@ clientTrafficPolicies:
       sectionName: http-3
       namespace: envoy-gateway
 gateways:
-- apiVersion: gateway.networking.k8s.io/v1
+- apiVersion: gateway.networking.k8s.io/v1beta1
   kind: Gateway
   metadata:
     namespace: envoy-gateway

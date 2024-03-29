@@ -15,6 +15,7 @@ import (
 	"sigs.k8s.io/controller-runtime/pkg/client"
 	gwapiv1 "sigs.k8s.io/gateway-api/apis/v1"
 	gwapiv1a2 "sigs.k8s.io/gateway-api/apis/v1alpha2"
+	gwapiv1b1 "sigs.k8s.io/gateway-api/apis/v1beta1"
 
 	"github.com/envoyproxy/gateway/internal/gatewayapi"
 	"github.com/envoyproxy/gateway/internal/utils"
@@ -204,7 +205,7 @@ func (r *gatewayAPIReconciler) processGRPCRoutes(ctx context.Context, gatewayNam
 // the backend references and pushes the HTTPRoutes to the resourceTree.
 func (r *gatewayAPIReconciler) processHTTPRoutes(ctx context.Context, gatewayNamespaceName string,
 	resourceMap *resourceMappings, resourceTree *gatewayapi.Resources) error {
-	httpRouteList := &gwapiv1.HTTPRouteList{}
+	httpRouteList := &gwapiv1b1.HTTPRouteList{}
 
 	extensionRefFilters, err := r.getExtensionRefFilters(ctx)
 	if err != nil {

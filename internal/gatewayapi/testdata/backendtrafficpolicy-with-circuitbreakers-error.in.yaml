@@ -1,5 +1,5 @@
 gateways:
-  - apiVersion: gateway.networking.k8s.io/v1
+  - apiVersion: gateway.networking.k8s.io/v1beta1
     kind: Gateway
     metadata:
       namespace: envoy-gateway
@@ -13,7 +13,7 @@ gateways:
           allowedRoutes:
             namespaces:
               from: All
-  - apiVersion: gateway.networking.k8s.io/v1
+  - apiVersion: gateway.networking.k8s.io/v1beta1
     kind: Gateway
     metadata:
       namespace: envoy-gateway
@@ -43,7 +43,7 @@ grpcRoutes:
             - name: service-1
               port: 8080
 httpRoutes:
-  - apiVersion: gateway.networking.k8s.io/v1
+  - apiVersion: gateway.networking.k8s.io/v1beta1
     kind: HTTPRoute
     metadata:
       namespace: default
@@ -62,7 +62,7 @@ httpRoutes:
           backendRefs:
             - name: service-1
               port: 8080
-  - apiVersion: gateway.networking.k8s.io/v1
+  - apiVersion: gateway.networking.k8s.io/v1beta1
     kind: HTTPRoute
     metadata:
       namespace: default

@@ -10,6 +10,7 @@ import (
 	"k8s.io/apimachinery/pkg/runtime/schema"
 	gwapiv1 "sigs.k8s.io/gateway-api/apis/v1"
 	egv1a2 "sigs.k8s.io/gateway-api/apis/v1alpha2"
+	gwapiv1b1 "sigs.k8s.io/gateway-api/apis/v1beta1"
 
 	egv1a1 "github.com/envoyproxy/gateway/api/v1alpha1"
 	"github.com/envoyproxy/gateway/internal/ir"
@@ -54,7 +55,7 @@ var _ TranslatorManager = (*Translator)(nil)
 
 type TranslatorManager interface {
 	Translate(resources *Resources) *TranslateResult
-	GetRelevantGateways(gateways []*gwapiv1.Gateway) []*GatewayContext
+	GetRelevantGateways(gateways []*gwapiv1b1.Gateway) []*GatewayContext
 
 	RoutesTranslator
 	ListenersTranslator
@@ -218,7 +219,7 @@ func (t *Translator) Translate(resources *Resources) *TranslateResult {
 
 // GetRelevantGateways returns GatewayContexts, containing a copy of the original
 // Gateway with the Listener statuses reset.
-func (t *Translator) GetRelevantGateways(gateways []*gwapiv1.Gateway) []*GatewayContext {
+func (t *Translator) GetRelevantGateways(gateways []*gwapiv1b1.Gateway) []*GatewayContext {
 	var relevant []*GatewayContext
 
 	for _, gateway := range gateways {
@@ -273,7 +274,7 @@ func (t *Translator) InitIRs(gateways []*GatewayContext, resources *Resources) (
 	return xdsIR, infraIR
 }
 
-func infrastructureAnnotations(gtw *gwapiv1.Gateway) map[string]string {
+func infrastructureAnnotations(gtw *gwapiv1b1.Gateway) map[string]string {
 	if gtw.Spec.Infrastructure != nil && len(gtw.Spec.Infrastructure.Annotations) > 0 {
 		res := make(map[string]string)
 		for k, v := range gtw.Spec.Infrastructure.Annotations {
@@ -284,7 +285,7 @@ func infrastructureAnnotations(gtw *gwapiv1.Gateway) map[string]string {
 	return nil
 }
 
-func infrastructureLabels(gtw *gwapiv1.Gateway) map[string]string {
+func infrastructureLabels(gtw *gwapiv1b1.Gateway) map[string]string {
 	res := make(map[string]string)
 	if gtw.Spec.Infrastructure != nil {
 		for k, v := range gtw.Spec.Infrastructure.Labels {
@@ -295,7 +296,7 @@ func infrastructureLabels(gtw *gwapiv1.Gateway) map[string]string {
 }
 
 // XdsIR and InfraIR map keys by default are {GatewayNamespace}/{GatewayName}, but if mergeGateways is set, they are merged under {GatewayClassName} key.
-func (t *Translator) getIRKey(gateway *gwapiv1.Gateway) string {
+func (t *Translator) getIRKey(gateway *gwapiv1b1.Gateway) string {
 	irKey := irStringKey(gateway.Namespace, gateway.Name)
 	if t.MergeGateways {
 		return string(t.GatewayClassName)

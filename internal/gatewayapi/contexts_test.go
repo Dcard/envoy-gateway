@@ -11,10 +11,11 @@ import (
 	"github.com/stretchr/testify/require"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 	gwapiv1 "sigs.k8s.io/gateway-api/apis/v1"
+	gwapiv1b1 "sigs.k8s.io/gateway-api/apis/v1beta1"
 )
 
 func TestContexts(t *testing.T) {
-	gateway := &gwapiv1.Gateway{
+	gateway := &gwapiv1b1.Gateway{
 		ObjectMeta: metav1.ObjectMeta{
 			Namespace: "envoy-gateway",
 			Name:      "gateway-1",
@@ -58,7 +59,7 @@ func TestContexts(t *testing.T) {
 }
 
 func TestContextsStaleListener(t *testing.T) {
-	gateway := &gwapiv1.Gateway{
+	gateway := &gwapiv1b1.Gateway{
 		ObjectMeta: metav1.ObjectMeta{
 			Namespace: "envoy-gateway",
 			Name:      "gateway-1",

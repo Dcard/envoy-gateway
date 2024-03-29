@@ -18,8 +18,8 @@ import (
 	"k8s.io/apimachinery/pkg/labels"
 	"k8s.io/apimachinery/pkg/types"
 	"sigs.k8s.io/controller-runtime/pkg/client"
-	gwapiv1 "sigs.k8s.io/gateway-api/apis/v1"
 	gwapiv1a2 "sigs.k8s.io/gateway-api/apis/v1alpha2"
+	gwapiv1b1 "sigs.k8s.io/gateway-api/apis/v1beta1"
 	mcsapi "sigs.k8s.io/mcs-api/pkg/apis/v1alpha1"
 
 	egv1a1 "github.com/envoyproxy/gateway/api/v1alpha1"
@@ -34,7 +34,7 @@ const oidcHMACSecretName = "envoy-oidc-hmac"
 // with a Spec.Controller string matching this Envoy Gateway's controller string,
 // or false otherwise.
 func (r *gatewayAPIReconciler) hasMatchingController(obj client.Object) bool {
-	gc, ok := obj.(*gwapiv1.GatewayClass)
+	gc, ok := obj.(*gwapiv1b1.GatewayClass)
 	if !ok {
 		r.log.Info("bypassing reconciliation due to unexpected object type", "type", obj)
 		return false
@@ -111,13 +111,13 @@ func matchLabelsAndExpressions(ls *metav1.LabelSelector, objLabels map[string]st
 // validateGatewayForReconcile returns true if the provided object is a Gateway
 // using a GatewayClass matching the configured gatewayclass controller name.
 func (r *gatewayAPIReconciler) validateGatewayForReconcile(obj client.Object) bool {
-	gw, ok := obj.(*gwapiv1.Gateway)
+	gw, ok := obj.(*gwapiv1b1.Gateway)
 	if !ok {
 		r.log.Info("unexpected object type, bypassing reconciliation", "object", obj)
 		return false
 	}
 
-	gc := &gwapiv1.GatewayClass{}
+	gc := &gwapiv1b1.GatewayClass{}
 	key := types.NamespacedName{Name: string(gw.Spec.GatewayClassName)}
 	if err := r.client.Get(context.Background(), key, gc); err != nil {
 		r.log.Error(err, "failed to get gatewayclass", "name", gw.Spec.GatewayClassName)
@@ -164,7 +164,7 @@ func (r *gatewayAPIReconciler) validateSecretForReconcile(obj client.Object) boo
 }
 
 func (r *gatewayAPIReconciler) isGatewayReferencingSecret(nsName *types.NamespacedName) bool {
-	gwList := &gwapiv1.GatewayList{}
+	gwList := &gwapiv1b1.GatewayList{}
 	if err := r.client.List(context.Background(), gwList, &client.ListOptions{
 		FieldSelector: fields.OneTermEqualSelector(secretGatewayIndex, nsName.String()),
 	}); err != nil {
@@ -284,7 +284,7 @@ func (r *gatewayAPIReconciler) validateServiceImportForReconcile(obj client.Obje
 // in the system, else returns false.
 func (r *gatewayAPIReconciler) isRouteReferencingBackend(nsName *types.NamespacedName) bool {
 	ctx := context.Background()
-	httpRouteList := &gwapiv1.HTTPRouteList{}
+	httpRouteList := &gwapiv1b1.HTTPRouteList{}
 	if err := r.client.List(ctx, httpRouteList, &client.ListOptions{
 		FieldSelector: fields.OneTermEqualSelector(backendHTTPRouteIndex, nsName.String()),
 	}); err != nil {
@@ -403,7 +403,7 @@ func (r *gatewayAPIReconciler) validateDeploymentForReconcile(obj client.Object)
 }
 
 // envoyDeploymentForGateway returns the Envoy Deployment, returning nil if the Deployment doesn't exist.
-func (r *gatewayAPIReconciler) envoyDeploymentForGateway(ctx context.Context, gateway *gwapiv1.Gateway) (*appsv1.Deployment, error) {
+func (r *gatewayAPIReconciler) envoyDeploymentForGateway(ctx context.Context, gateway *gwapiv1b1.Gateway) (*appsv1.Deployment, error) {
 	key := types.NamespacedName{
 		Namespace: r.namespace,
 		Name:      infraName(gateway, r.mergeGateways.Has(string(gateway.Spec.GatewayClassName))),
@@ -419,7 +419,7 @@ func (r *gatewayAPIReconciler) envoyDeploymentForGateway(ctx context.Context, ga
 }
 
 // envoyServiceForGateway returns the Envoy service, returning nil if the service doesn't exist.
-func (r *gatewayAPIReconciler) envoyServiceForGateway(ctx context.Context, gateway *gwapiv1.Gateway) (*corev1.Service, error) {
+func (r *gatewayAPIReconciler) envoyServiceForGateway(ctx context.Context, gateway *gwapiv1b1.Gateway) (*corev1.Service, error) {
 	key := types.NamespacedName{
 		Namespace: r.namespace,
 		Name:      infraName(gateway, r.mergeGateways.Has(string(gateway.Spec.GatewayClassName))),
@@ -435,7 +435,7 @@ func (r *gatewayAPIReconciler) envoyServiceForGateway(ctx context.Context, gatew
 }
 
 // findOwningGateway attempts finds a Gateway using "labels".
-func (r *gatewayAPIReconciler) findOwningGateway(ctx context.Context, labels map[string]string) *gwapiv1.Gateway {
+func (r *gatewayAPIReconciler) findOwningGateway(ctx context.Context, labels map[string]string) *gwapiv1b1.Gateway {
 	gwName, ok := labels[gatewayapi.OwningGatewayNameLabel]
 	if !ok {
 		return nil
@@ -447,7 +447,7 @@ func (r *gatewayAPIReconciler) findOwningGateway(ctx context.Context, labels map
 	}
 
 	gatewayKey := types.NamespacedName{Namespace: gwNamespace, Name: gwName}
-	gtw := new(gwapiv1.Gateway)
+	gtw := new(gwapiv1b1.Gateway)
 	if err := r.client.Get(ctx, gatewayKey, gtw); err != nil {
 		r.log.Info("gateway not found", "namespace", gtw.Namespace, "name", gtw.Name)
 		return nil
@@ -458,7 +458,7 @@ func (r *gatewayAPIReconciler) findOwningGateway(ctx context.Context, labels map
 
 // updateStatusForGatewaysUnderGatewayClass updates status of all Gateways under the GatewayClass.
 func (r *gatewayAPIReconciler) updateStatusForGatewaysUnderGatewayClass(ctx context.Context, gatewayClassName string) error {
-	gateways := new(gwapiv1.GatewayList)
+	gateways := new(gwapiv1b1.GatewayList)
 	if err := r.client.List(ctx, gateways, &client.ListOptions{
 		FieldSelector: fields.OneTermEqualSelector(classGatewayIndex, gatewayClassName),
 	}); err != nil {
