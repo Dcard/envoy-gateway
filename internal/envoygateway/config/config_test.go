@@ -9,15 +9,15 @@ import (
 	"testing"
 
 	"github.com/stretchr/testify/require"
-	v1 "sigs.k8s.io/gateway-api/apis/v1"
+	gwv1b1 "sigs.k8s.io/gateway-api/apis/v1beta1"
 
 	"github.com/envoyproxy/gateway/api/v1alpha1"
 	"github.com/envoyproxy/gateway/internal/logging"
 )
 
 var (
-	TLSSecretKind       = v1.Kind("Secret")
-	TLSUnrecognizedKind = v1.Kind("Unrecognized")
+	TLSSecretKind       = gwv1b1.Kind("Secret")
+	TLSUnrecognizedKind = gwv1b1.Kind("Unrecognized")
 )
 
 func TestValidate(t *testing.T) {

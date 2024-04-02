@@ -12,7 +12,6 @@ import (
 	kerrors "k8s.io/apimachinery/pkg/api/errors"
 	"k8s.io/apimachinery/pkg/types"
 	"sigs.k8s.io/controller-runtime/pkg/client"
-	gwapiv1 "sigs.k8s.io/gateway-api/apis/v1"
 	gwapiv1a2 "sigs.k8s.io/gateway-api/apis/v1alpha2"
 	gwapiv1b1 "sigs.k8s.io/gateway-api/apis/v1beta1"
 
@@ -396,9 +395,9 @@ func (r *gatewayAPIReconciler) updateStatusForGateway(ctx context.Context, gtw *
 	// publish status
 	r.statusUpdater.Send(status.Update{
 		NamespacedName: key,
-		Resource:       new(gwapiv1.Gateway),
+		Resource:       new(gwapiv1b1.Gateway),
 		Mutator: status.MutatorFunc(func(obj client.Object) client.Object {
-			g, ok := obj.(*gwapiv1.Gateway)
+			g, ok := obj.(*gwapiv1b1.Gateway)
 			if !ok {
 				panic(fmt.Sprintf("unsupported object type %T", obj))
 			}

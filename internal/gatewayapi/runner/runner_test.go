@@ -14,8 +14,8 @@ import (
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 	"k8s.io/apimachinery/pkg/types"
-	gwapiv1 "sigs.k8s.io/gateway-api/apis/v1"
 	gwapiv1a2 "sigs.k8s.io/gateway-api/apis/v1alpha2"
+	gwapiv1b1 "sigs.k8s.io/gateway-api/apis/v1beta1"
 
 	egv1a1 "github.com/envoyproxy/gateway/api/v1alpha1"
 	"github.com/envoyproxy/gateway/internal/envoygateway/config"
@@ -160,8 +160,8 @@ func TestDeleteStatusKeys(t *testing.T) {
 		},
 	}
 
-	r.ProviderResources.GatewayStatuses.Store(keys[0], &gwapiv1.GatewayStatus{})
-	r.ProviderResources.HTTPRouteStatuses.Store(keys[1], &gwapiv1.HTTPRouteStatus{})
+	r.ProviderResources.GatewayStatuses.Store(keys[0], &gwapiv1b1.GatewayStatus{})
+	r.ProviderResources.HTTPRouteStatuses.Store(keys[1], &gwapiv1b1.HTTPRouteStatus{})
 	r.ProviderResources.GRPCRouteStatuses.Store(keys[2], &gwapiv1a2.GRPCRouteStatus{})
 	r.ProviderResources.TLSRouteStatuses.Store(keys[3], &gwapiv1a2.TLSRouteStatus{})
 	r.ProviderResources.TCPRouteStatuses.Store(keys[4], &gwapiv1a2.TCPRouteStatus{})
@@ -246,8 +246,8 @@ func TestDeleteAllStatusKeys(t *testing.T) {
 		},
 	}
 
-	r.ProviderResources.GatewayStatuses.Store(keys[0], &gwapiv1.GatewayStatus{})
-	r.ProviderResources.HTTPRouteStatuses.Store(keys[1], &gwapiv1.HTTPRouteStatus{})
+	r.ProviderResources.GatewayStatuses.Store(keys[0], &gwapiv1b1.GatewayStatus{})
+	r.ProviderResources.HTTPRouteStatuses.Store(keys[1], &gwapiv1b1.HTTPRouteStatus{})
 	r.ProviderResources.GRPCRouteStatuses.Store(keys[2], &gwapiv1a2.GRPCRouteStatus{})
 	r.ProviderResources.TLSRouteStatuses.Store(keys[3], &gwapiv1a2.TLSRouteStatus{})
 	r.ProviderResources.TCPRouteStatuses.Store(keys[4], &gwapiv1a2.TCPRouteStatus{})

@@ -10,16 +10,16 @@ import (
 	"errors"
 	"fmt"
 
+	"github.com/envoyproxy/gateway/internal/gatewayapi"
+
 	corev1 "k8s.io/api/core/v1"
 	k8smachinery "k8s.io/apimachinery/pkg/types"
 	k8sclient "sigs.k8s.io/controller-runtime/pkg/client"
-	gwapiv1 "sigs.k8s.io/gateway-api/apis/v1"
-
-	"github.com/envoyproxy/gateway/internal/gatewayapi"
+	gwapiv1b1 "sigs.k8s.io/gateway-api/apis/v1beta1"
 )
 
 // ValidateSecretObjectReference validate secret object reference for extension tls and ratelimit tls settings.
-func ValidateSecretObjectReference(ctx context.Context, client k8sclient.Client, secretObjRef *gwapiv1.SecretObjectReference, namespace string) (*corev1.Secret, string, error) {
+func ValidateSecretObjectReference(ctx context.Context, client k8sclient.Client, secretObjRef *gwapiv1b1.SecretObjectReference, namespace string) (*corev1.Secret, string, error) {
 	if (secretObjRef.Group == nil || *secretObjRef.Group == corev1.GroupName) &&
 		(secretObjRef.Kind == nil || *secretObjRef.Kind == gatewayapi.KindSecret) {
 		secret := &corev1.Secret{}

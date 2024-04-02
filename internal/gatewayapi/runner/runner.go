@@ -12,7 +12,7 @@ import (
 	"k8s.io/apimachinery/pkg/runtime/schema"
 	"k8s.io/apimachinery/pkg/types"
 	"k8s.io/apimachinery/pkg/util/sets"
-	v1 "sigs.k8s.io/gateway-api/apis/v1"
+	"sigs.k8s.io/gateway-api/apis/v1beta1"
 
 	"github.com/envoyproxy/gateway/api/v1alpha1"
 	"github.com/envoyproxy/gateway/internal/envoygateway/config"
@@ -80,7 +80,7 @@ func (r *Runner) subscribeAndTranslate(ctx context.Context) {
 				// Translate and publish IRs.
 				t := &gatewayapi.Translator{
 					GatewayControllerName:   r.Server.EnvoyGateway.Gateway.ControllerName,
-					GatewayClassName:        v1.ObjectName(resources.GatewayClass.Name),
+					GatewayClassName:        v1beta1.ObjectName(resources.GatewayClass.Name),
 					GlobalRateLimitEnabled:  r.EnvoyGateway.RateLimit != nil,
 					EnvoyPatchPolicyEnabled: r.EnvoyGateway.ExtensionAPIs != nil && r.EnvoyGateway.ExtensionAPIs.EnableEnvoyPatchPolicy,
 					Namespace:               r.Namespace,

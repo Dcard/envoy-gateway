@@ -30,11 +30,11 @@ type GatewayContext struct {
 // ListenerContexts from the Gateway spec.
 func (g *GatewayContext) ResetListeners() {
 	numListeners := len(g.Spec.Listeners)
-	g.Status.Listeners = make([]gwapiv1.ListenerStatus, numListeners)
+	g.Status.Listeners = make([]gwapiv1b1.ListenerStatus, numListeners)
 	g.listeners = make([]*ListenerContext, numListeners)
 	for i := range g.Spec.Listeners {
 		listener := &g.Spec.Listeners[i]
-		g.Status.Listeners[i] = gwapiv1.ListenerStatus{Name: listener.Name}
+		g.Status.Listeners[i] = gwapiv1b1.ListenerStatus{Name: listener.Name}
 		g.listeners[i] = &ListenerContext{
 			Listener:          listener,
 			gateway:           g.Gateway,

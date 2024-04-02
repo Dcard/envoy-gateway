@@ -47,7 +47,7 @@ type gatewayAPIReconciler struct {
 	client          client.Client
 	log             logging.Logger
 	statusUpdater   status.Updater
-	classController gwapiv1.GatewayController
+	classController gwapiv1b1.GatewayController
 	store           *kubernetesProviderStore
 	namespace       string
 	namespaceLabel  *metav1.LabelSelector
@@ -81,7 +81,7 @@ func newGatewayAPIController(mgr manager.Manager, cfg *config.Server, su status.
 	r := &gatewayAPIReconciler{
 		client:          mgr.GetClient(),
 		log:             cfg.Logger,
-		classController: gwapiv1.GatewayController(cfg.EnvoyGateway.Gateway.ControllerName),
+		classController: gwapiv1b1.GatewayController(cfg.EnvoyGateway.Gateway.ControllerName),
 		namespace:       cfg.Namespace,
 		statusUpdater:   su,
 		resources:       resources,
@@ -115,7 +115,7 @@ type resourceMappings struct {
 	// Map for storing namespaces for Route, Service and Gateway objects.
 	allAssociatedNamespaces map[string]struct{}
 	// Map for storing backendRefs' NamespaceNames referred by various Route objects.
-	allAssociatedBackendRefs map[gwapiv1.BackendObjectReference]struct{}
+	allAssociatedBackendRefs map[gwapiv1b1.BackendObjectReference]struct{}
 	// extensionRefFilters is a map of filters managed by an extension.
 	// The key is the namespaced name of the filter and the value is the
 	// unstructured form of the resource.
@@ -125,7 +125,7 @@ type resourceMappings struct {
 func newResourceMapping() *resourceMappings {
 	return &resourceMappings{
 		allAssociatedNamespaces:  map[string]struct{}{},
-		allAssociatedBackendRefs: map[gwapiv1.BackendObjectReference]struct{}{},
+		allAssociatedBackendRefs: map[gwapiv1b1.BackendObjectReference]struct{}{},
 		extensionRefFilters:      map[types.NamespacedName]unstructured.Unstructured{},
 	}
 }
@@ -416,7 +416,7 @@ func (r *gatewayAPIReconciler) processSecurityPolicyObjectRefs(
 		// Add the referenced BackendRefs and ReferenceGrants in ExtAuth to Maps for later processing
 		extAuth := policy.Spec.ExtAuth
 		if extAuth != nil {
-			var backendRef gwapiv1.BackendObjectReference
+			var backendRef gwapiv1b1.BackendObjectReference
 			if extAuth.GRPC != nil {
 				backendRef = extAuth.GRPC.BackendRef
 			} else {
@@ -424,7 +424,7 @@ func (r *gatewayAPIReconciler) processSecurityPolicyObjectRefs(
 			}
 
 			backendNamespace := gatewayapi.NamespaceDerefOr(backendRef.Namespace, policy.Namespace)
-			resourceMap.allAssociatedBackendRefs[gwapiv1.BackendObjectReference{
+			resourceMap.allAssociatedBackendRefs[gwapiv1b1.BackendObjectReference{
 				Group:     backendRef.Group,
 				Kind:      backendRef.Kind,
 				Namespace: gatewayapi.NamespacePtrV1Alpha2(backendNamespace),
@@ -767,7 +767,7 @@ func (r *gatewayAPIReconciler) processGateways(ctx context.Context, managedGC *g
 
 		// Discard Status to reduce memory consumption in watchable
 		// It will be recomputed by the gateway-api layer
-		gtw.Status = gwapiv1.GatewayStatus{}
+		gtw.Status = gwapiv1b1.GatewayStatus{}
 		resourceTree.Gateways = append(resourceTree.Gateways, &gtw)
 	}
 

@@ -278,7 +278,7 @@ func translateGatewayAPIToIR(resources *gatewayapi.Resources) (*gatewayapi.Trans
 
 	t := &gatewayapi.Translator{
 		GatewayControllerName:   egv1a1.GatewayControllerName,
-		GatewayClassName:        gwapiv1.ObjectName(resources.GatewayClass.Name),
+		GatewayClassName:        gwapiv1b1.ObjectName(resources.GatewayClass.Name),
 		GlobalRateLimitEnabled:  true,
 		EndpointRoutingDisabled: true,
 		EnvoyPatchPolicyEnabled: true,
@@ -305,7 +305,7 @@ func translateGatewayAPIToGatewayAPI(resources *gatewayapi.Resources) (gatewayap
 	// Translate from Gateway API to Xds IR
 	gTranslator := &gatewayapi.Translator{
 		GatewayControllerName:   egv1a1.GatewayControllerName,
-		GatewayClassName:        gwapiv1.ObjectName(resources.GatewayClass.Name),
+		GatewayClassName:        gwapiv1b1.ObjectName(resources.GatewayClass.Name),
 		GlobalRateLimitEnabled:  true,
 		EndpointRoutingDisabled: true,
 		EnvoyPatchPolicyEnabled: true,
@@ -337,7 +337,7 @@ func translateGatewayAPIToXds(dnsDomain string, resourceType string, resources *
 	// Translate from Gateway API to Xds IR
 	gTranslator := &gatewayapi.Translator{
 		GatewayControllerName:   egv1a1.GatewayControllerName,
-		GatewayClassName:        gwapiv1.ObjectName(resources.GatewayClass.Name),
+		GatewayClassName:        gwapiv1b1.ObjectName(resources.GatewayClass.Name),
 		GlobalRateLimitEnabled:  true,
 		EndpointRoutingDisabled: true,
 		EnvoyPatchPolicyEnabled: true,
@@ -543,7 +543,7 @@ func addMissingServices(requiredServices map[string]*v1.Service, obj interface{}
 	var objNamespace string
 	protocol := v1.Protocol(gatewayapi.TCPProtocol)
 
-	refs := []gwapiv1.BackendRef{}
+	refs := []gwapiv1b1.BackendRef{}
 	switch route := obj.(type) {
 	case *gwapiv1b1.HTTPRoute:
 		objNamespace = route.Namespace
@@ -687,7 +687,7 @@ func kubernetesYAMLToResources(str string, addMissingResources bool) (*gatewayap
 					Name:      name,
 					Namespace: namespace,
 				},
-				Spec: typedSpec.(gwapiv1.GatewayClassSpec),
+				Spec: typedSpec.(gwapiv1b1.GatewayClassSpec),
 			}
 			resources.GatewayClass = gatewayClass
 		case gatewayapi.KindGateway:
@@ -697,7 +697,7 @@ func kubernetesYAMLToResources(str string, addMissingResources bool) (*gatewayap
 					Name:      name,
 					Namespace: namespace,
 				},
-				Spec: typedSpec.(gwapiv1.GatewaySpec),
+				Spec: typedSpec.(gwapiv1b1.GatewaySpec),
 			}
 			resources.Gateways = append(resources.Gateways, gateway)
 		case gatewayapi.KindTCPRoute:
@@ -946,9 +946,9 @@ func addDefaultEnvoyProxy(resources *gatewayapi.Resources) error {
 		},
 	}
 	resources.EnvoyProxy = ep
-	ns := gwapiv1.Namespace(namespace)
-	resources.GatewayClass.Spec.ParametersRef = &gwapiv1.ParametersReference{
-		Group:     gwapiv1.Group(egv1a1.GroupVersion.Group),
+	ns := gwapiv1b1.Namespace(namespace)
+	resources.GatewayClass.Spec.ParametersRef = &gwapiv1b1.ParametersReference{
+		Group:     gwapiv1b1.Group(egv1a1.GroupVersion.Group),
 		Kind:      gatewayapi.KindEnvoyProxy,
 		Name:      defaultEnvoyProxyName,
 		Namespace: &ns,

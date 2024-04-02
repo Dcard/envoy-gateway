@@ -36,8 +36,8 @@ type ObjectKindNamespacedName struct {
 // referenced Gateways managed by Envoy Gateway. The only supported parentRef
 // is a Gateway.
 func validateParentRefs(ctx context.Context, client client.Client, namespace string,
-	gatewayClassController gwapiv1.GatewayController,
-	routeParentReferences []gwapiv1.ParentReference) ([]gwapiv1b1.Gateway, error) {
+	gatewayClassController gwapiv1b1.GatewayController,
+	routeParentReferences []gwapiv1b1.ParentReference) ([]gwapiv1b1.Gateway, error) {
 
 	var gateways []gwapiv1b1.Gateway
 	for i := range routeParentReferences {
@@ -45,7 +45,7 @@ func validateParentRefs(ctx context.Context, client client.Client, namespace str
 		if ref.Kind != nil && *ref.Kind != "Gateway" {
 			return nil, fmt.Errorf("invalid Kind %q", *ref.Kind)
 		}
-		if ref.Group != nil && *ref.Group != gwapiv1.GroupName {
+		if ref.Group != nil && *ref.Group != gwapiv1b1.GroupName {
 			return nil, fmt.Errorf("invalid Group %q", *ref.Group)
 		}
 
@@ -129,7 +129,7 @@ func gatewaysOfClass(gc *gwapiv1b1.GatewayClass, gwList *gwapiv1b1.GatewayList) 
 
 // terminatesTLS returns true if the provided gateway contains a listener configured
 // for TLS termination.
-func terminatesTLS(listener *gwapiv1.Listener) bool {
+func terminatesTLS(listener *gwapiv1b1.Listener) bool {
 	if listener.TLS != nil &&
 		(listener.Protocol == gwapiv1.HTTPSProtocolType ||
 			listener.Protocol == gwapiv1.TLSProtocolType) &&
@@ -141,7 +141,7 @@ func terminatesTLS(listener *gwapiv1.Listener) bool {
 }
 
 // refsSecret returns true if ref refers to a Secret.
-func refsSecret(ref *gwapiv1.SecretObjectReference) bool {
+func refsSecret(ref *gwapiv1b1.SecretObjectReference) bool {
 	return (ref.Group == nil || *ref.Group == corev1.GroupName) &&
 		(ref.Kind == nil || *ref.Kind == gatewayapi.KindSecret)
 }
@@ -162,7 +162,7 @@ func infraName(gateway *gwapiv1b1.Gateway, merged bool) string {
 //   - Validating weights.
 //   - Validating ports.
 //   - Referencing HTTPRoutes.
-func validateBackendRef(ref *gwapiv1.BackendRef) error {
+func validateBackendRef(ref *gwapiv1b1.BackendRef) error {
 	switch {
 	case ref == nil:
 		return nil

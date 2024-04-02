@@ -229,7 +229,7 @@ func (t *Translator) processHTTPRouteRules(httpRoute *HTTPRouteContext, parentRe
 	return routeRoutes, nil
 }
 
-func processTimeout(irRoute *ir.HTTPRoute, rule gwapiv1.HTTPRouteRule) {
+func processTimeout(irRoute *ir.HTTPRoute, rule gwapiv1b1.HTTPRouteRule) {
 	if rule.Timeouts != nil {
 		var rto *ir.Timeout
 
@@ -273,7 +273,7 @@ func setRequestTimeout(irTimeout *ir.Timeout, d metav1.Duration) {
 	}
 }
 
-func (t *Translator) processHTTPRouteRule(httpRoute *HTTPRouteContext, ruleIdx int, httpFiltersContext *HTTPFiltersContext, rule gwapiv1.HTTPRouteRule) ([]*ir.HTTPRoute, error) {
+func (t *Translator) processHTTPRouteRule(httpRoute *HTTPRouteContext, ruleIdx int, httpFiltersContext *HTTPFiltersContext, rule gwapiv1b1.HTTPRouteRule) ([]*ir.HTTPRoute, error) {
 	var ruleRoutes []*ir.HTTPRoute
 
 	// If no matches are specified, the implementation MUST match every HTTP request.
@@ -1225,7 +1225,7 @@ func (t *Translator) processAllowedListenersForParentRefs(routeContext RouteCont
 		var allowedListeners []*ListenerContext
 		for _, listener := range selectedListeners {
 			acceptedKind := GetRouteType(routeContext)
-			if listener.AllowsKind(gwapiv1.RouteGroupKind{Group: GroupPtr(gwapiv1.GroupName), Kind: acceptedKind}) &&
+			if listener.AllowsKind(gwapiv1b1.RouteGroupKind{Group: GroupPtr(gwapiv1b1.GroupName), Kind: acceptedKind}) &&
 				listener.AllowsNamespace(resources.GetNamespace(routeContext.GetNamespace())) {
 				allowedListeners = append(allowedListeners, listener)
 			}
@@ -1336,7 +1336,7 @@ func GetTargetBackendReference(backendRef gwapiv1a2.BackendObjectReference, name
 				}
 				return *backendRef.Group
 			}(),
-			Kind: func() gwapiv1.Kind {
+			Kind: func() gwapiv1b1.Kind {
 				if backendRef.Kind == nil {
 					return "Service"
 				}
@@ -1345,7 +1345,7 @@ func GetTargetBackendReference(backendRef gwapiv1a2.BackendObjectReference, name
 			Name:      backendRef.Name,
 			Namespace: NamespacePtr(NamespaceDerefOr(backendRef.Namespace, namespace)),
 		},
-		SectionName: func() *gwapiv1.SectionName {
+		SectionName: func() *gwapiv1b1.SectionName {
 			if backendRef.Port != nil {
 				return SectionNamePtr(strconv.Itoa(int(*backendRef.Port)))
 			}

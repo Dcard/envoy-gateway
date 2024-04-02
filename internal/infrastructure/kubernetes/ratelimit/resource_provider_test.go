@@ -20,7 +20,7 @@ import (
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 	"k8s.io/apimachinery/pkg/types"
 	"k8s.io/utils/ptr"
-	gwapiv1 "sigs.k8s.io/gateway-api/apis/v1"
+	gwapiv1b1 "sigs.k8s.io/gateway-api/apis/v1beta1"
 	"sigs.k8s.io/yaml"
 
 	egv1a1 "github.com/envoyproxy/gateway/api/v1alpha1"
@@ -435,7 +435,7 @@ func TestDeployment(t *testing.T) {
 					Redis: &egv1a1.RateLimitRedisSettings{
 						URL: "redis.redis.svc:6379",
 						TLS: &egv1a1.RedisTLSSettings{
-							CertificateRef: &gwapiv1.SecretObjectReference{
+							CertificateRef: &gwapiv1b1.SecretObjectReference{
 								Name: "ratelimit-cert",
 							},
 						},
@@ -489,7 +489,7 @@ func TestDeployment(t *testing.T) {
 					Redis: &egv1a1.RateLimitRedisSettings{
 						URL: "redis.redis.svc:6379",
 						TLS: &egv1a1.RedisTLSSettings{
-							CertificateRef: &gwapiv1.SecretObjectReference{
+							CertificateRef: &gwapiv1b1.SecretObjectReference{
 								Name: "ratelimit-cert",
 							},
 						},
@@ -551,7 +551,7 @@ func TestDeployment(t *testing.T) {
 					Redis: &egv1a1.RateLimitRedisSettings{
 						URL: "redis.redis.svc:6379",
 						TLS: &egv1a1.RedisTLSSettings{
-							CertificateRef: &gwapiv1.SecretObjectReference{
+							CertificateRef: &gwapiv1b1.SecretObjectReference{
 								Name: "ratelimit-cert-origin",
 							},
 						},

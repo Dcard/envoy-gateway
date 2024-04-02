@@ -8,7 +8,6 @@ package gatewayapi
 import (
 	"golang.org/x/exp/maps"
 	"k8s.io/apimachinery/pkg/runtime/schema"
-	gwapiv1 "sigs.k8s.io/gateway-api/apis/v1"
 	egv1a2 "sigs.k8s.io/gateway-api/apis/v1alpha2"
 	gwapiv1b1 "sigs.k8s.io/gateway-api/apis/v1beta1"
 
@@ -71,7 +70,7 @@ type Translator struct {
 
 	// GatewayClassName is the name of the GatewayClass
 	// to process Gateways for.
-	GatewayClassName gwapiv1.ObjectName
+	GatewayClassName gwapiv1b1.ObjectName
 
 	// GlobalRateLimitEnabled is true when global
 	// ratelimiting has been configured by the admin.

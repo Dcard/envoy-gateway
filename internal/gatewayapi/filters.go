@@ -12,6 +12,7 @@ import (
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 	gwapiv1 "sigs.k8s.io/gateway-api/apis/v1"
 	"sigs.k8s.io/gateway-api/apis/v1alpha2"
+	gwapiv1b1 "sigs.k8s.io/gateway-api/apis/v1beta1"
 
 	"github.com/envoyproxy/gateway/internal/ir"
 )
@@ -23,12 +24,12 @@ type FiltersTranslator interface {
 var _ FiltersTranslator = (*Translator)(nil)
 
 type HTTPFiltersTranslator interface {
-	processURLRewriteFilter(rewrite *gwapiv1.HTTPURLRewriteFilter, filterContext *HTTPFiltersContext)
-	processRedirectFilter(redirect *gwapiv1.HTTPRequestRedirectFilter, filterContext *HTTPFiltersContext)
-	processRequestHeaderModifierFilter(headerModifier *gwapiv1.HTTPHeaderFilter, filterContext *HTTPFiltersContext)
-	processResponseHeaderModifierFilter(headerModifier *gwapiv1.HTTPHeaderFilter, filterContext *HTTPFiltersContext)
-	processRequestMirrorFilter(filterIdx int, mirror *gwapiv1.HTTPRequestMirrorFilter, filterContext *HTTPFiltersContext, resources *Resources)
-	processExtensionRefHTTPFilter(extRef *gwapiv1.LocalObjectReference, filterContext *HTTPFiltersContext, resources *Resources)
+	processURLRewriteFilter(rewrite *gwapiv1b1.HTTPURLRewriteFilter, filterContext *HTTPFiltersContext)
+	processRedirectFilter(redirect *gwapiv1b1.HTTPRequestRedirectFilter, filterContext *HTTPFiltersContext)
+	processRequestHeaderModifierFilter(headerModifier *gwapiv1b1.HTTPHeaderFilter, filterContext *HTTPFiltersContext)
+	processResponseHeaderModifierFilter(headerModifier *gwapiv1b1.HTTPHeaderFilter, filterContext *HTTPFiltersContext)
+	processRequestMirrorFilter(filterIdx int, mirror *gwapiv1b1.HTTPRequestMirrorFilter, filterContext *HTTPFiltersContext, resources *Resources)
+	processExtensionRefHTTPFilter(extRef *gwapiv1b1.LocalObjectReference, filterContext *HTTPFiltersContext, resources *Resources)
 	processUnsupportedHTTPFilter(filterType string, filterContext *HTTPFiltersContext)
 }
 
@@ -62,7 +63,7 @@ type HTTPFilterIR struct {
 // ProcessHTTPFilters translates gateway api http filters to IRs.
 func (t *Translator) ProcessHTTPFilters(parentRef *RouteParentContext,
 	route RouteContext,
-	filters []gwapiv1.HTTPRouteFilter,
+	filters []gwapiv1b1.HTTPRouteFilter,
 	ruleIdx int,
 	resources *Resources) *HTTPFiltersContext {
 	httpFiltersContext := &HTTPFiltersContext{
@@ -143,7 +144,7 @@ func (t *Translator) ProcessGRPCFilters(parentRef *RouteParentContext,
 }
 
 func (t *Translator) processURLRewriteFilter(
-	rewrite *gwapiv1.HTTPURLRewriteFilter,
+	rewrite *gwapiv1b1.HTTPURLRewriteFilter,
 	filterContext *HTTPFiltersContext) {
 	if filterContext.URLRewrite != nil {
 		filterContext.ParentRef.SetCondition(filterContext.Route,
@@ -245,7 +246,7 @@ func (t *Translator) processURLRewriteFilter(
 }
 
 func (t *Translator) processRedirectFilter(
-	redirect *gwapiv1.HTTPRequestRedirectFilter,
+	redirect *gwapiv1b1.HTTPRequestRedirectFilter,
 	filterContext *HTTPFiltersContext) {
 	// Can't have two redirects for the same route
 	if filterContext.RedirectResponse != nil {
@@ -346,7 +347,7 @@ func (t *Translator) processRedirectFilter(
 }
 
 func (t *Translator) processRequestHeaderModifierFilter(
-	headerModifier *gwapiv1.HTTPHeaderFilter,
+	headerModifier *gwapiv1b1.HTTPHeaderFilter,
 	filterContext *HTTPFiltersContext) {
 	// Make sure the header modifier config actually exists
 	if headerModifier == nil {
@@ -499,7 +500,7 @@ func (t *Translator) processRequestHeaderModifierFilter(
 }
 
 func (t *Translator) processResponseHeaderModifierFilter(
-	headerModifier *gwapiv1.HTTPHeaderFilter,
+	headerModifier *gwapiv1b1.HTTPHeaderFilter,
 	filterContext *HTTPFiltersContext) {
 	// Make sure the header modifier config actually exists
 	if headerModifier == nil {
@@ -652,7 +653,7 @@ func (t *Translator) processResponseHeaderModifierFilter(
 	}
 }
 
-func (t *Translator) processExtensionRefHTTPFilter(extFilter *gwapiv1.LocalObjectReference, filterContext *HTTPFiltersContext, resources *Resources) {
+func (t *Translator) processExtensionRefHTTPFilter(extFilter *gwapiv1b1.LocalObjectReference, filterContext *HTTPFiltersContext, resources *Resources) {
 	// Make sure the config actually exists.
 	if extFilter == nil {
 		return
@@ -691,7 +692,7 @@ func (t *Translator) processExtensionRefHTTPFilter(extFilter *gwapiv1.LocalObjec
 
 func (t *Translator) processRequestMirrorFilter(
 	filterIdx int,
-	mirrorFilter *gwapiv1.HTTPRequestMirrorFilter,
+	mirrorFilter *gwapiv1b1.HTTPRequestMirrorFilter,
 	filterContext *HTTPFiltersContext,
 	resources *Resources) {
 
@@ -704,8 +705,8 @@ func (t *Translator) processRequestMirrorFilter(
 
 	// Wrap the filter's BackendObjectReference into a BackendRef so we can use existing tooling to check it
 	weight := int32(1)
-	mirrorBackendRef := gwapiv1.HTTPBackendRef{
-		BackendRef: gwapiv1.BackendRef{
+	mirrorBackendRef := gwapiv1b1.HTTPBackendRef{
+		BackendRef: gwapiv1b1.BackendRef{
 			BackendObjectReference: mirrorBackend,
 			Weight:                 &weight,
 		},

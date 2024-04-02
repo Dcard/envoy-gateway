@@ -12,12 +12,12 @@
 package gatewayapi
 
 import (
-	gwapiv1 "sigs.k8s.io/gateway-api/apis/v1"
 	gwapiv1a2 "sigs.k8s.io/gateway-api/apis/v1alpha2"
+	gwapiv1b1 "sigs.k8s.io/gateway-api/apis/v1beta1"
 )
 
-// TODO: [gwapiv1a2-gwapiv1]
-// This file can be removed once TLSRoute graduates to gwapiv1.
+// TODO: [gwapiv1a2-gwapiv1b1]
+// This file can be removed once TLSRoute graduates to gwapiv1b1.
 
 func GroupPtrV1Alpha2(group string) *gwapiv1a2.Group {
 	gwGroup := gwapiv1a2.Group(group)
@@ -44,17 +44,17 @@ func PortNumPtrV1Alpha2(port int) *gwapiv1a2.PortNumber {
 	return &pn
 }
 
-func UpgradeParentReferences(old []gwapiv1a2.ParentReference) []gwapiv1.ParentReference {
-	newParentReferences := make([]gwapiv1.ParentReference, len(old))
+func UpgradeParentReferences(old []gwapiv1a2.ParentReference) []gwapiv1b1.ParentReference {
+	newParentReferences := make([]gwapiv1b1.ParentReference, len(old))
 	for i, o := range old {
 		newParentReferences[i] = UpgradeParentReference(o)
 	}
 	return newParentReferences
 }
 
-// UpgradeParentReference converts gwapiv1a2.ParentReference to gwapiv1.ParentReference
-func UpgradeParentReference(old gwapiv1a2.ParentReference) gwapiv1.ParentReference {
-	upgraded := gwapiv1.ParentReference{}
+// UpgradeParentReference converts gwapiv1a2.ParentReference to gwapiv1b1.ParentReference
+func UpgradeParentReference(old gwapiv1a2.ParentReference) gwapiv1b1.ParentReference {
+	upgraded := gwapiv1b1.ParentReference{}
 
 	if old.Group != nil {
 		upgraded.Group = GroupPtr(string(*old.Group))
@@ -81,7 +81,7 @@ func UpgradeParentReference(old gwapiv1a2.ParentReference) gwapiv1.ParentReferen
 	return upgraded
 }
 
-func DowngradeParentReference(old gwapiv1.ParentReference) gwapiv1a2.ParentReference {
+func DowngradeParentReference(old gwapiv1b1.ParentReference) gwapiv1a2.ParentReference {
 	downgraded := gwapiv1a2.ParentReference{}
 
 	if old.Group != nil {
@@ -109,11 +109,11 @@ func DowngradeParentReference(old gwapiv1.ParentReference) gwapiv1a2.ParentRefer
 	return downgraded
 }
 
-func UpgradeRouteParentStatuses(routeParentStatuses []gwapiv1a2.RouteParentStatus) []gwapiv1.RouteParentStatus {
-	var res []gwapiv1.RouteParentStatus
+func UpgradeRouteParentStatuses(routeParentStatuses []gwapiv1a2.RouteParentStatus) []gwapiv1b1.RouteParentStatus {
+	var res []gwapiv1b1.RouteParentStatus
 
 	for _, rps := range routeParentStatuses {
-		res = append(res, gwapiv1.RouteParentStatus{
+		res = append(res, gwapiv1b1.RouteParentStatus{
 			ParentRef:      UpgradeParentReference(rps.ParentRef),
 			ControllerName: rps.ControllerName,
 			Conditions:     rps.Conditions,
@@ -123,7 +123,7 @@ func UpgradeRouteParentStatuses(routeParentStatuses []gwapiv1a2.RouteParentStatu
 	return res
 }
 
-func DowngradeRouteParentStatuses(routeParentStatuses []gwapiv1.RouteParentStatus) []gwapiv1a2.RouteParentStatus {
+func DowngradeRouteParentStatuses(routeParentStatuses []gwapiv1b1.RouteParentStatus) []gwapiv1a2.RouteParentStatus {
 	var res []gwapiv1a2.RouteParentStatus
 
 	for _, rps := range routeParentStatuses {
@@ -137,9 +137,9 @@ func DowngradeRouteParentStatuses(routeParentStatuses []gwapiv1.RouteParentStatu
 	return res
 }
 
-// UpgradeBackendRef converts gwapiv1a2.BackendRef to gwapiv1.BackendRef
-func UpgradeBackendRef(old gwapiv1a2.BackendRef) gwapiv1.BackendRef {
-	upgraded := gwapiv1.BackendRef{}
+// UpgradeBackendRef converts gwapiv1a2.BackendRef to gwapiv1b1.BackendRef
+func UpgradeBackendRef(old gwapiv1a2.BackendRef) gwapiv1b1.BackendRef {
+	upgraded := gwapiv1b1.BackendRef{}
 
 	if old.Group != nil {
 		upgraded.Group = GroupPtr(string(*old.Group))
@@ -162,7 +162,7 @@ func UpgradeBackendRef(old gwapiv1a2.BackendRef) gwapiv1.BackendRef {
 	return upgraded
 }
 
-func DowngradeBackendRef(old gwapiv1.BackendRef) gwapiv1a2.BackendRef {
+func DowngradeBackendRef(old gwapiv1b1.BackendRef) gwapiv1a2.BackendRef {
 	downgraded := gwapiv1a2.BackendRef{}
 
 	if old.Group != nil {

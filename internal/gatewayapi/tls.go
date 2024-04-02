@@ -13,11 +13,12 @@ import (
 
 	corev1 "k8s.io/api/core/v1"
 	v1 "sigs.k8s.io/gateway-api/apis/v1"
+	"sigs.k8s.io/gateway-api/apis/v1beta1"
 )
 
 // validateTLSSecretData ensures the cert and key provided in a secret
 // is not malformed and can be properly parsed
-func validateTLSSecretsData(secrets []*corev1.Secret, host *v1.Hostname) error {
+func validateTLSSecretsData(secrets []*corev1.Secret, host *v1beta1.Hostname) error {
 	var publicKeyAlgorithm string
 	var parseErr error
 

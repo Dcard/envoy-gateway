@@ -23,7 +23,7 @@ import (
 )
 
 func (t *Translator) validateBackendRef(backendRefContext BackendRefContext, parentRef *RouteParentContext, route RouteContext,
-	resources *Resources, backendNamespace string, routeKind gwapiv1.Kind) bool {
+	resources *Resources, backendNamespace string, routeKind gwapiv1b1.Kind) bool {
 	if !t.validateBackendRefFilters(backendRefContext, parentRef, route, routeKind) {
 		return false
 	}
@@ -85,11 +85,11 @@ func (t *Translator) validateBackendRefKind(backendRef *gwapiv1a2.BackendRef, pa
 	return true
 }
 
-func (t *Translator) validateBackendRefFilters(backendRef BackendRefContext, parentRef *RouteParentContext, route RouteContext, routeKind gwapiv1.Kind) bool {
+func (t *Translator) validateBackendRefFilters(backendRef BackendRefContext, parentRef *RouteParentContext, route RouteContext, routeKind gwapiv1b1.Kind) bool {
 	var filtersLen int
 	switch routeKind {
 	case KindHTTPRoute:
-		filters := GetFilters(backendRef).([]gwapiv1.HTTPRouteFilter)
+		filters := GetFilters(backendRef).([]gwapiv1b1.HTTPRouteFilter)
 		filtersLen = len(filters)
 	case KindGRPCRoute:
 		filters := GetFilters(backendRef).([]gwapiv1a2.GRPCRouteFilter)
