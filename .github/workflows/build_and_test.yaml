@@ -156,7 +156,7 @@ jobs:
       uses: docker/login-action@343f7c4344506bcbf9b4de18042ae17996df046d  # v3.0.0
       with:
         username: ${{ secrets.DOCKERHUB_USERNAME }}
-        password: ${{ secrets.DOCKERHUB_PASSWORD }}
+        password: ${{ secrets.DOCKERHUB_TOKEN }}
 
     - name: Setup Multiarch Environment
       if: github.event_name == 'push'
@@ -165,14 +165,14 @@ jobs:
     - name: Build and Push EG Commit Image
       if: github.event_name == 'push'
       # tag is set to the short SHA of the commit
-      run: make image.push.multiarch PLATFORMS="linux_amd64 linux_arm64" IMAGE=envoyproxy/gateway-dev
+      run: make image.push.multiarch PLATFORMS="linux_amd64 linux_arm64" IMAGE=dcard/envoy-gateway
 
     - name: Build and Push EG Latest Image
       if: github.event_name == 'push' && github.ref == 'refs/heads/main'
       # tag is set to `latest` when pushing to main branch
-      run: make image.push.multiarch TAG=latest PLATFORMS="linux_amd64 linux_arm64" IMAGE=envoyproxy/gateway-dev
+      run: make image.push.multiarch TAG=latest PLATFORMS="linux_amd64 linux_arm64" IMAGE=dcard/envoy-gateway
 
-    - name: Build and Push EG Latest Helm Chart
-      if: github.event_name == 'push' && github.ref == 'refs/heads/main'
-      # use `0.0.0` as the default latest version.
-      run: OCI_REGISTRY=oci://docker.io/envoyproxy CHART_VERSION=v0.0.0-latest TAG=latest make helm-package helm-push
+    # - name: Build and Push EG Latest Helm Chart
+    #   if: github.event_name == 'push' && github.ref == 'refs/heads/main'
+    #   # use `0.0.0` as the default latest version.
+    #   run: OCI_REGISTRY=oci://docker.io/envoyproxy CHART_VERSION=v0.0.0-latest TAG=latest make helm-package helm-push
