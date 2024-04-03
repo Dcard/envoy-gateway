@@ -80,8 +80,8 @@ func newHTTPClient(config *rest.Config) (*http.Client, error) {
 
 const (
 	gatewayAPIPath        = "/apis/gateway.networking.k8s.io/"
-	gatewayAPIPathV1      = gatewayAPIPath + "v1/"
-	gatewayAPIPathV1Beta1 = gatewayAPIPath + "v1beta1/"
+	gatewayAPIPathV1      = gatewayAPIPath + "v1"
+	gatewayAPIPathV1Beta1 = gatewayAPIPath + "v1beta1"
 )
 
 type rewriteAPIVersion struct {
@@ -89,8 +89,8 @@ type rewriteAPIVersion struct {
 }
 
 func (r rewriteAPIVersion) RoundTrip(req *http.Request) (*http.Response, error) {
-	if strings.HasPrefix(req.URL.Path, gatewayAPIPathV1) {
-		req.URL.Path = strings.Replace(req.URL.Path, gatewayAPIPathV1, gatewayAPIPathV1Beta1, 1)
+	if req.URL.Path == gatewayAPIPathV1 || strings.HasPrefix(req.URL.Path, gatewayAPIPathV1) {
+		req.URL.Path = gatewayAPIPathV1Beta1 + req.URL.Path[len(gatewayAPIPathV1):]
 	}
 
 	return r.RoundTripper.RoundTrip(req)
