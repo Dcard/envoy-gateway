@@ -1,5 +1,5 @@
 ---
-apiVersion: gateway.networking.k8s.io/v1
+apiVersion: gateway.networking.k8s.io/v1beta1
 kind: HTTPRoute
 metadata:
   name: http-with-oidc
@@ -17,7 +17,7 @@ spec:
     - name: infra-backend-v1
       port: 8080
 ---
-apiVersion: gateway.networking.k8s.io/v1
+apiVersion: gateway.networking.k8s.io/v1beta1
 kind: HTTPRoute
 metadata:
   name: http-without-oidc
@@ -35,7 +35,7 @@ spec:
     - name: infra-backend-v1
       port: 8080
 ---
-apiVersion: gateway.networking.k8s.io/v1
+apiVersion: gateway.networking.k8s.io/v1beta1
 kind: HTTPRoute
 metadata:
   name: http-keycloak

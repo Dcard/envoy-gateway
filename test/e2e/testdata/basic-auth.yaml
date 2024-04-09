@@ -15,7 +15,7 @@ metadata:
 data:
   .htpasswd: "dXNlcjM6e1NIQX1QcitqQWR4WkdXOFlXVHhGNVJrb2VpTXBkWWs9CnVzZXI0OntTSEF9SC9LemNFcnQ0RTdzdFI1UXltbU8vVkNoTjVzPQ=="
 ---
-apiVersion: gateway.networking.k8s.io/v1
+apiVersion: gateway.networking.k8s.io/v1beta1
 kind: HTTPRoute
 metadata:
   name: http-with-basic-auth-1
@@ -32,7 +32,7 @@ spec:
     - name: infra-backend-v1
       port: 8080
 ---
-apiVersion: gateway.networking.k8s.io/v1
+apiVersion: gateway.networking.k8s.io/v1beta1
 kind: HTTPRoute
 metadata:
   name: http-with-basic-auth-2

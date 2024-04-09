@@ -25,6 +25,7 @@ import (
 	fakeclock "k8s.io/utils/clock/testing"
 	"k8s.io/utils/ptr"
 	gwapiv1 "sigs.k8s.io/gateway-api/apis/v1"
+	gwapiv1b1 "sigs.k8s.io/gateway-api/apis/v1beta1"
 )
 
 var clock utilclock.Clock = utilclock.RealClock{}
@@ -68,7 +69,7 @@ func TestComputeGatewayClassAcceptedCondition(t *testing.T) {
 	}
 
 	for _, tc := range testCases {
-		gc := &gwapiv1.GatewayClass{
+		gc := &gwapiv1b1.GatewayClass{
 			ObjectMeta: metav1.ObjectMeta{
 				Generation: 7,
 			},
@@ -108,7 +109,7 @@ func TestComputeGatewayScheduledCondition(t *testing.T) {
 	}
 
 	for _, tc := range testCases {
-		gw := &gwapiv1.Gateway{
+		gw := &gwapiv1b1.Gateway{
 			ObjectMeta: metav1.ObjectMeta{
 				Namespace: "test",
 				Name:      "test",
@@ -320,7 +321,7 @@ func TestGatewayReadyCondition(t *testing.T) {
 		tc := tc
 		t.Run(tc.name, func(t *testing.T) {
 			t.Parallel()
-			gtw := &gwapiv1.Gateway{}
+			gtw := &gwapiv1b1.Gateway{}
 			if tc.serviceAddress {
 				gtw.Status = gwapiv1.GatewayStatus{
 					Addresses: []gwapiv1.GatewayStatusAddress{

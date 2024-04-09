@@ -12,8 +12,8 @@ import (
 	kerrors "k8s.io/apimachinery/pkg/api/errors"
 	"k8s.io/apimachinery/pkg/types"
 	"sigs.k8s.io/controller-runtime/pkg/client"
-	gwapiv1 "sigs.k8s.io/gateway-api/apis/v1"
 	gwapiv1a2 "sigs.k8s.io/gateway-api/apis/v1alpha2"
+	gwapiv1b1 "sigs.k8s.io/gateway-api/apis/v1beta1"
 
 	"github.com/envoyproxy/gateway/api/v1alpha1"
 	"github.com/envoyproxy/gateway/internal/message"
@@ -29,13 +29,13 @@ func (r *gatewayAPIReconciler) subscribeAndUpdateStatus(ctx context.Context) {
 		message.HandleSubscription(
 			message.Metadata{Runner: string(v1alpha1.LogComponentProviderRunner), Message: "gateway-status"},
 			r.resources.GatewayStatuses.Subscribe(ctx),
-			func(update message.Update[types.NamespacedName, *gwapiv1.GatewayStatus], errChan chan error) {
+			func(update message.Update[types.NamespacedName, *gwapiv1b1.GatewayStatus], errChan chan error) {
 				// skip delete updates.
 				if update.Delete {
 					return
 				}
 				// Get gateway object
-				gtw := new(gwapiv1.Gateway)
+				gtw := new(gwapiv1b1.Gateway)
 				if err := r.client.Get(ctx, update.Key, gtw); err != nil {
 					r.log.Error(err, "gateway not found", "namespace", gtw.Namespace, "name", gtw.Name)
 					errChan <- err
@@ -54,7 +54,7 @@ func (r *gatewayAPIReconciler) subscribeAndUpdateStatus(ctx context.Context) {
 		message.HandleSubscription(
 			message.Metadata{Runner: string(v1alpha1.LogComponentProviderRunner), Message: "httproute-status"},
 			r.resources.HTTPRouteStatuses.Subscribe(ctx),
-			func(update message.Update[types.NamespacedName, *gwapiv1.HTTPRouteStatus], errChan chan error) {
+			func(update message.Update[types.NamespacedName, *gwapiv1b1.HTTPRouteStatus], errChan chan error) {
 				// skip delete updates.
 				if update.Delete {
 					return
@@ -63,9 +63,9 @@ func (r *gatewayAPIReconciler) subscribeAndUpdateStatus(ctx context.Context) {
 				val := update.Value
 				r.statusUpdater.Send(status.Update{
 					NamespacedName: key,
-					Resource:       new(gwapiv1.HTTPRoute),
+					Resource:       new(gwapiv1b1.HTTPRoute),
 					Mutator: status.MutatorFunc(func(obj client.Object) client.Object {
-						h, ok := obj.(*gwapiv1.HTTPRoute)
+						h, ok := obj.(*gwapiv1b1.HTTPRoute)
 						if !ok {
 							err := fmt.Errorf("unsupported object type %T", obj)
 							errChan <- err
@@ -366,7 +366,7 @@ func (r *gatewayAPIReconciler) subscribeAndUpdateStatus(ctx context.Context) {
 	}()
 }
 
-func (r *gatewayAPIReconciler) updateStatusForGateway(ctx context.Context, gtw *gwapiv1.Gateway) {
+func (r *gatewayAPIReconciler) updateStatusForGateway(ctx context.Context, gtw *gwapiv1b1.Gateway) {
 	// nil check for unit tests.
 	if r.statusUpdater == nil {
 		return
@@ -395,9 +395,9 @@ func (r *gatewayAPIReconciler) updateStatusForGateway(ctx context.Context, gtw *
 	// publish status
 	r.statusUpdater.Send(status.Update{
 		NamespacedName: key,
-		Resource:       new(gwapiv1.Gateway),
+		Resource:       new(gwapiv1b1.Gateway),
 		Mutator: status.MutatorFunc(func(obj client.Object) client.Object {
-			g, ok := obj.(*gwapiv1.Gateway)
+			g, ok := obj.(*gwapiv1b1.Gateway)
 			if !ok {
 				panic(fmt.Sprintf("unsupported object type %T", obj))
 			}
@@ -412,16 +412,16 @@ func (r *gatewayAPIReconciler) updateStatusForGateway(ctx context.Context, gtw *
 
 func (r *gatewayAPIReconciler) updateStatusForGatewayClass(
 	ctx context.Context,
-	gc *gwapiv1.GatewayClass,
+	gc *gwapiv1b1.GatewayClass,
 	accepted bool,
 	reason,
 	msg string) error {
 	if r.statusUpdater != nil {
 		r.statusUpdater.Send(status.Update{
 			NamespacedName: types.NamespacedName{Name: gc.Name},
-			Resource:       &gwapiv1.GatewayClass{},
+			Resource:       &gwapiv1b1.GatewayClass{},
 			Mutator: status.MutatorFunc(func(obj client.Object) client.Object {
-				gc, ok := obj.(*gwapiv1.GatewayClass)
+				gc, ok := obj.(*gwapiv1b1.GatewayClass)
 				if !ok {
 					panic(fmt.Sprintf("unsupported object type %T", obj))
 				}

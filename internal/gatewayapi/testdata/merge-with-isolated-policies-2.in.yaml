@@ -52,7 +52,7 @@ gateways:
             namespaces:
               from: Same
 httpRoutes:
-  - apiVersion: gateway.networking.k8s.io/v1
+  - apiVersion: gateway.networking.k8s.io/v1beta1
     kind: HTTPRoute
     metadata:
       namespace: default
@@ -71,7 +71,7 @@ httpRoutes:
           backendRefs:
             - name: service-1
               port: 8080
-  - apiVersion: gateway.networking.k8s.io/v1
+  - apiVersion: gateway.networking.k8s.io/v1beta1
     kind: HTTPRoute
     metadata:
       namespace: default
@@ -90,7 +90,7 @@ httpRoutes:
           backendRefs:
             - name: service-2
               port: 8080
-  - apiVersion: gateway.networking.k8s.io/v1
+  - apiVersion: gateway.networking.k8s.io/v1beta1
     kind: HTTPRoute
     metadata:
       namespace: default
@@ -109,7 +109,7 @@ httpRoutes:
           backendRefs:
             - name: service-1
               port: 8080
-  - apiVersion: gateway.networking.k8s.io/v1
+  - apiVersion: gateway.networking.k8s.io/v1beta1
     kind: HTTPRoute
     metadata:
       namespace: default

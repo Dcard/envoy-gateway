@@ -11,7 +11,7 @@ import (
 	"github.com/google/go-cmp/cmp"
 	"github.com/stretchr/testify/require"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
-	gwapiv1 "sigs.k8s.io/gateway-api/apis/v1"
+	gwapiv1b1 "sigs.k8s.io/gateway-api/apis/v1beta1"
 )
 
 func TestEqualXds(t *testing.T) {
@@ -25,7 +25,7 @@ func TestEqualXds(t *testing.T) {
 			desc: "different resources",
 			a: &ControllerResources{
 				{
-					GatewayClass: &gwapiv1.GatewayClass{
+					GatewayClass: &gwapiv1b1.GatewayClass{
 						ObjectMeta: metav1.ObjectMeta{
 							Name: "foo",
 						},
@@ -34,7 +34,7 @@ func TestEqualXds(t *testing.T) {
 			},
 			b: &ControllerResources{
 				{
-					GatewayClass: &gwapiv1.GatewayClass{
+					GatewayClass: &gwapiv1b1.GatewayClass{
 						ObjectMeta: metav1.ObjectMeta{
 							Name: "bar",
 						},
@@ -47,14 +47,14 @@ func TestEqualXds(t *testing.T) {
 			desc: "same order resources are equal",
 			a: &ControllerResources{
 				{
-					GatewayClass: &gwapiv1.GatewayClass{
+					GatewayClass: &gwapiv1b1.GatewayClass{
 						ObjectMeta: metav1.ObjectMeta{
 							Name: "foo",
 						},
 					},
 				},
 				{
-					GatewayClass: &gwapiv1.GatewayClass{
+					GatewayClass: &gwapiv1b1.GatewayClass{
 						ObjectMeta: metav1.ObjectMeta{
 							Name: "bar",
 						},
@@ -63,14 +63,14 @@ func TestEqualXds(t *testing.T) {
 			},
 			b: &ControllerResources{
 				{
-					GatewayClass: &gwapiv1.GatewayClass{
+					GatewayClass: &gwapiv1b1.GatewayClass{
 						ObjectMeta: metav1.ObjectMeta{
 							Name: "foo",
 						},
 					},
 				},
 				{
-					GatewayClass: &gwapiv1.GatewayClass{
+					GatewayClass: &gwapiv1b1.GatewayClass{
 						ObjectMeta: metav1.ObjectMeta{
 							Name: "bar",
 						},
@@ -83,14 +83,14 @@ func TestEqualXds(t *testing.T) {
 			desc: "out of order resources are equal",
 			a: &ControllerResources{
 				{
-					GatewayClass: &gwapiv1.GatewayClass{
+					GatewayClass: &gwapiv1b1.GatewayClass{
 						ObjectMeta: metav1.ObjectMeta{
 							Name: "foo",
 						},
 					},
 				},
 				{
-					GatewayClass: &gwapiv1.GatewayClass{
+					GatewayClass: &gwapiv1b1.GatewayClass{
 						ObjectMeta: metav1.ObjectMeta{
 							Name: "bar",
 						},
@@ -99,14 +99,14 @@ func TestEqualXds(t *testing.T) {
 			},
 			b: &ControllerResources{
 				{
-					GatewayClass: &gwapiv1.GatewayClass{
+					GatewayClass: &gwapiv1b1.GatewayClass{
 						ObjectMeta: metav1.ObjectMeta{
 							Name: "bar",
 						},
 					},
 				},
 				{
-					GatewayClass: &gwapiv1.GatewayClass{
+					GatewayClass: &gwapiv1b1.GatewayClass{
 						ObjectMeta: metav1.ObjectMeta{
 							Name: "foo",
 						},

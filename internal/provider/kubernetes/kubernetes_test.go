@@ -31,6 +31,7 @@ import (
 	"sigs.k8s.io/controller-runtime/pkg/log/zap"
 	gwapiv1 "sigs.k8s.io/gateway-api/apis/v1"
 	gwapiv1a2 "sigs.k8s.io/gateway-api/apis/v1alpha2"
+	gwapiv1b1 "sigs.k8s.io/gateway-api/apis/v1beta1"
 
 	egv1a1 "github.com/envoyproxy/gateway/api/v1alpha1"
 	"github.com/envoyproxy/gateway/internal/envoygateway/config"
@@ -248,7 +249,7 @@ func testGatewayScheduledStatus(ctx context.Context, t *testing.T, provider *Pro
 	ns := &corev1.Namespace{ObjectMeta: metav1.ObjectMeta{Name: "test-gw-of-class"}}
 	require.NoError(t, cli.Create(ctx, ns))
 
-	gw := &gwapiv1.Gateway{
+	gw := &gwapiv1b1.Gateway{
 		ObjectMeta: metav1.ObjectMeta{
 			Name:      "scheduled-status-test",
 			Namespace: ns.Name,
@@ -405,7 +406,7 @@ func testHTTPRoute(ctx context.Context, t *testing.T, provider *Provider, resour
 	ns := &corev1.Namespace{ObjectMeta: metav1.ObjectMeta{Name: "httproute-test"}}
 	require.NoError(t, cli.Create(ctx, ns))
 
-	gw := &gwapiv1.Gateway{
+	gw := &gwapiv1b1.Gateway{
 		ObjectMeta: metav1.ObjectMeta{
 			Name:      "httproute-test",
 			Namespace: ns.Name,
@@ -446,11 +447,11 @@ func testHTTPRoute(ctx context.Context, t *testing.T, provider *Provider, resour
 
 	var testCases = []struct {
 		name  string
-		route gwapiv1.HTTPRoute
+		route gwapiv1b1.HTTPRoute
 	}{
 		{
 			name: "destination-httproute",
-			route: gwapiv1.HTTPRoute{
+			route: gwapiv1b1.HTTPRoute{
 				ObjectMeta: metav1.ObjectMeta{
 					Name:      "httproute-test",
 					Namespace: ns.Name,
@@ -491,7 +492,7 @@ func testHTTPRoute(ctx context.Context, t *testing.T, provider *Provider, resour
 		},
 		{
 			name: "redirect-httproute",
-			route: gwapiv1.HTTPRoute{
+			route: gwapiv1b1.HTTPRoute{
 				ObjectMeta: metav1.ObjectMeta{
 					Name:      "httproute-redirect-test",
 					Namespace: ns.Name,
@@ -537,7 +538,7 @@ func testHTTPRoute(ctx context.Context, t *testing.T, provider *Provider, resour
 		},
 		{
 			name: "rewrite-httproute",
-			route: gwapiv1.HTTPRoute{
+			route: gwapiv1b1.HTTPRoute{
 				ObjectMeta: metav1.ObjectMeta{
 					Name:      "httproute-rewrite-test",
 					Namespace: ns.Name,
@@ -590,7 +591,7 @@ func testHTTPRoute(ctx context.Context, t *testing.T, provider *Provider, resour
 		},
 		{
 			name: "add-request-header-httproute",
-			route: gwapiv1.HTTPRoute{
+			route: gwapiv1b1.HTTPRoute{
 				ObjectMeta: metav1.ObjectMeta{
 					Name:      "httproute-add-request-header-test",
 					Namespace: ns.Name,
@@ -654,7 +655,7 @@ func testHTTPRoute(ctx context.Context, t *testing.T, provider *Provider, resour
 		},
 		{
 			name: "remove-request-header-httproute",
-			route: gwapiv1.HTTPRoute{
+			route: gwapiv1b1.HTTPRoute{
 				ObjectMeta: metav1.ObjectMeta{
 					Name:      "httproute-remove-request-header-test",
 					Namespace: ns.Name,
@@ -707,7 +708,7 @@ func testHTTPRoute(ctx context.Context, t *testing.T, provider *Provider, resour
 		},
 		{
 			name: "add-response-header-httproute",
-			route: gwapiv1.HTTPRoute{
+			route: gwapiv1b1.HTTPRoute{
 				ObjectMeta: metav1.ObjectMeta{
 					Name:      "httproute-add-response-header-test",
 					Namespace: ns.Name,
@@ -771,7 +772,7 @@ func testHTTPRoute(ctx context.Context, t *testing.T, provider *Provider, resour
 		},
 		{
 			name: "remove-response-header-httproute",
-			route: gwapiv1.HTTPRoute{
+			route: gwapiv1b1.HTTPRoute{
 				ObjectMeta: metav1.ObjectMeta{
 					Name:      "httproute-remove-response-header-test",
 					Namespace: ns.Name,
@@ -824,7 +825,7 @@ func testHTTPRoute(ctx context.Context, t *testing.T, provider *Provider, resour
 		},
 		{
 			name: "mirror-httproute",
-			route: gwapiv1.HTTPRoute{
+			route: gwapiv1b1.HTTPRoute{
 				ObjectMeta: metav1.ObjectMeta{
 					Name:      "httproute-mirror-test",
 					Namespace: ns.Name,
@@ -955,7 +956,7 @@ func testTLSRoute(ctx context.Context, t *testing.T, provider *Provider, resourc
 	ns := &corev1.Namespace{ObjectMeta: metav1.ObjectMeta{Name: "tlsroute-test"}}
 	require.NoError(t, cli.Create(ctx, ns))
 
-	gw := &gwapiv1.Gateway{
+	gw := &gwapiv1b1.Gateway{
 		ObjectMeta: metav1.ObjectMeta{
 			Name:      "tlsroute-test",
 			Namespace: ns.Name,
@@ -1101,7 +1102,7 @@ func testServiceCleanupForMultipleRoutes(ctx context.Context, t *testing.T, prov
 	ns := &corev1.Namespace{ObjectMeta: metav1.ObjectMeta{Name: "service-cleanup-test"}}
 	require.NoError(t, cli.Create(ctx, ns))
 
-	gw := &gwapiv1.Gateway{
+	gw := &gwapiv1b1.Gateway{
 		ObjectMeta: metav1.ObjectMeta{
 			Name:      "service-cleanup-test",
 			Namespace: ns.Name,
@@ -1162,7 +1163,7 @@ func testServiceCleanupForMultipleRoutes(ctx context.Context, t *testing.T, prov
 		},
 	}
 
-	httpRoute := gwapiv1.HTTPRoute{
+	httpRoute := gwapiv1b1.HTTPRoute{
 		ObjectMeta: metav1.ObjectMeta{
 			Name:      "httproute-test",
 			Namespace: ns.Name,
@@ -1295,7 +1296,7 @@ func TestNamespacedProvider(t *testing.T) {
 	require.NoError(t, cli.Create(ctx, gw3))
 
 	// Ensure only 2 gateways are reconciled
-	gatewayList := &gwapiv1.GatewayList{}
+	gatewayList := &gwapiv1b1.GatewayList{}
 	require.NoError(t, cli.List(ctx, gatewayList))
 	assert.Equal(t, len(gatewayList.Items), 2)
 

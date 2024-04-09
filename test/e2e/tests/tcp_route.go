@@ -30,6 +30,7 @@ import (
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 	gatewayv1 "sigs.k8s.io/gateway-api/apis/v1"
 	"sigs.k8s.io/gateway-api/apis/v1alpha2"
+	gatewayv1b1 "sigs.k8s.io/gateway-api/apis/v1beta1"
 )
 
 func init() {
@@ -134,7 +135,7 @@ func WaitForGatewayAddress(t *testing.T, client client.Client, timeoutConfig con
 
 	var ipAddr, port string
 	waitErr := wait.PollUntilContextTimeout(context.Background(), 1*time.Second, timeoutConfig.GatewayMustHaveAddress, true, func(ctx context.Context) (bool, error) {
-		gw := &gatewayv1.Gateway{}
+		gw := &gatewayv1b1.Gateway{}
 		err := client.Get(ctx, gwName, gw)
 		if err != nil {
 			t.Logf("error fetching Gateway: %v", err)
