@@ -13,7 +13,6 @@ import (
 	v1 "k8s.io/api/core/v1"
 	discoveryv1 "k8s.io/api/discovery/v1"
 	"k8s.io/apimachinery/pkg/apis/meta/v1/unstructured"
-	gwapiv1 "sigs.k8s.io/gateway-api/apis/v1"
 	gwapiv1a2 "sigs.k8s.io/gateway-api/apis/v1alpha2"
 	gwapiv1b1 "sigs.k8s.io/gateway-api/apis/v1beta1"
 	mcsapi "sigs.k8s.io/mcs-api/pkg/apis/v1alpha1"
@@ -31,9 +30,9 @@ type InfraIRMap map[string]*ir.Infra
 type Resources struct {
 	// This field is only used for marshalling/unmarshalling purposes and is not used by
 	// the translator
-	GatewayClass           *gwapiv1.GatewayClass          `json:"gatewayClass,omitempty" yaml:"gatewayClass,omitempty"`
-	Gateways               []*gwapiv1.Gateway             `json:"gateways,omitempty" yaml:"gateways,omitempty"`
-	HTTPRoutes             []*gwapiv1.HTTPRoute           `json:"httpRoutes,omitempty" yaml:"httpRoutes,omitempty"`
+	GatewayClass           *gwapiv1b1.GatewayClass        `json:"gatewayClass,omitempty" yaml:"gatewayClass,omitempty"`
+	Gateways               []*gwapiv1b1.Gateway           `json:"gateways,omitempty" yaml:"gateways,omitempty"`
+	HTTPRoutes             []*gwapiv1b1.HTTPRoute         `json:"httpRoutes,omitempty" yaml:"httpRoutes,omitempty"`
 	GRPCRoutes             []*gwapiv1a2.GRPCRoute         `json:"grpcRoutes,omitempty" yaml:"grpcRoutes,omitempty"`
 	TLSRoutes              []*gwapiv1a2.TLSRoute          `json:"tlsRoutes,omitempty" yaml:"tlsRoutes,omitempty"`
 	TCPRoutes              []*gwapiv1a2.TCPRoute          `json:"tcpRoutes,omitempty" yaml:"tcpRoutes,omitempty"`
@@ -56,8 +55,8 @@ type Resources struct {
 
 func NewResources() *Resources {
 	return &Resources{
-		Gateways:               []*gwapiv1.Gateway{},
-		HTTPRoutes:             []*gwapiv1.HTTPRoute{},
+		Gateways:               []*gwapiv1b1.Gateway{},
+		HTTPRoutes:             []*gwapiv1b1.HTTPRoute{},
 		GRPCRoutes:             []*gwapiv1a2.GRPCRoute{},
 		TLSRoutes:              []*gwapiv1a2.TLSRoute{},
 		Services:               []*v1.Service{},

@@ -766,7 +766,7 @@ func (t *Translator) validateHostname(hostname string) error {
 func (t *Translator) validateSecretRef(
 	allowCrossNamespace bool,
 	from crossNamespaceFrom,
-	secretObjRef gwapiv1b1.SecretObjectReference,
+	secretObjRef gwapiv1.SecretObjectReference,
 	resources *Resources) (*v1.Secret, error) {
 
 	if err := t.validateSecretObjectRef(allowCrossNamespace, from, secretObjRef, resources); err != nil {
@@ -790,7 +790,7 @@ func (t *Translator) validateSecretRef(
 func (t *Translator) validateConfigMapRef(
 	allowCrossNamespace bool,
 	from crossNamespaceFrom,
-	secretObjRef gwapiv1b1.SecretObjectReference,
+	secretObjRef gwapiv1.SecretObjectReference,
 	resources *Resources) (*v1.ConfigMap, error) {
 
 	if err := t.validateSecretObjectRef(allowCrossNamespace, from, secretObjRef, resources); err != nil {
@@ -814,7 +814,7 @@ func (t *Translator) validateConfigMapRef(
 func (t *Translator) validateSecretObjectRef(
 	allowCrossNamespace bool,
 	from crossNamespaceFrom,
-	secretRef gwapiv1b1.SecretObjectReference,
+	secretRef gwapiv1.SecretObjectReference,
 	resources *Resources) error {
 	var kind string
 	if secretRef.Group != nil && string(*secretRef.Group) != "" {

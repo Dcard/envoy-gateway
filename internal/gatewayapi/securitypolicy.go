@@ -23,7 +23,6 @@ import (
 	"k8s.io/utils/ptr"
 	gwapiv1 "sigs.k8s.io/gateway-api/apis/v1"
 	gwv1a2 "sigs.k8s.io/gateway-api/apis/v1alpha2"
-	gwv1b1 "sigs.k8s.io/gateway-api/apis/v1beta1"
 
 	egv1a1 "github.com/envoyproxy/gateway/api/v1alpha1"
 	"github.com/envoyproxy/gateway/internal/ir"
@@ -229,7 +228,7 @@ func resolveSecurityPolicyGatewayTargetRef(
 	targetNs := policy.Spec.TargetRef.Namespace
 	// If empty, default to namespace of policy
 	if targetNs == nil {
-		targetNs = ptr.To(gwv1b1.Namespace(policy.Namespace))
+		targetNs = ptr.To(gwapiv1.Namespace(policy.Namespace))
 	}
 
 	// Find the Gateway
@@ -282,7 +281,7 @@ func resolveSecurityPolicyRouteTargetRef(
 	targetNs := policy.Spec.TargetRef.Namespace
 	// If empty, default to namespace of policy
 	if targetNs == nil {
-		targetNs = ptr.To(gwv1b1.Namespace(policy.Namespace))
+		targetNs = ptr.To(gwapiv1.Namespace(policy.Namespace))
 	}
 
 	// Check if the route exists

@@ -15,12 +15,13 @@ import (
 	"sigs.k8s.io/controller-runtime/pkg/client"
 	gwapiv1 "sigs.k8s.io/gateway-api/apis/v1"
 	"sigs.k8s.io/gateway-api/apis/v1alpha2"
+	gwapiv1b1 "sigs.k8s.io/gateway-api/apis/v1beta1"
 )
 
 // GatewayContext wraps a Gateway and provides helper methods for
 // setting conditions, accessing Listeners, etc.
 type GatewayContext struct {
-	*gwapiv1.Gateway
+	*gwapiv1b1.Gateway
 
 	listeners []*ListenerContext
 }
@@ -48,7 +49,7 @@ func (g *GatewayContext) ResetListeners() {
 type ListenerContext struct {
 	*gwapiv1.Listener
 
-	gateway           *gwapiv1.Gateway
+	gateway           *gwapiv1b1.Gateway
 	listenerStatusIdx int
 	namespaceSelector labels.Selector
 	tlsSecrets        []*v1.Secret
@@ -162,7 +163,7 @@ type HTTPRouteContext struct {
 	// GatewayControllerName is the name of the Gateway API controller.
 	GatewayControllerName string
 
-	*gwapiv1.HTTPRoute
+	*gwapiv1b1.HTTPRoute
 
 	ParentRefs map[gwapiv1.ParentReference]*RouteParentContext
 }
@@ -354,7 +355,7 @@ type RouteParentContext struct {
 
 	// TODO: [v1alpha2-gwapiv1] This can probably be replaced with
 	// a single field pointing to *gwapiv1.RouteStatus.
-	HTTPRoute *gwapiv1.HTTPRoute
+	HTTPRoute *gwapiv1b1.HTTPRoute
 	GRPCRoute *v1alpha2.GRPCRoute
 	TLSRoute  *v1alpha2.TLSRoute
 	TCPRoute  *v1alpha2.TCPRoute

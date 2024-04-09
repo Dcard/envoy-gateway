@@ -15,6 +15,7 @@ import (
 	"sigs.k8s.io/controller-runtime/pkg/client"
 	fakeclient "sigs.k8s.io/controller-runtime/pkg/client/fake"
 	gwapiv1 "sigs.k8s.io/gateway-api/apis/v1"
+	gwapiv1b1 "sigs.k8s.io/gateway-api/apis/v1beta1"
 
 	egv1a1 "github.com/envoyproxy/gateway/api/v1alpha1"
 	"github.com/envoyproxy/gateway/internal/envoygateway"
@@ -26,12 +27,12 @@ import (
 func TestAddGatewayClassFinalizer(t *testing.T) {
 	testCases := []struct {
 		name   string
-		gc     *gwapiv1.GatewayClass
+		gc     *gwapiv1b1.GatewayClass
 		expect []string
 	}{
 		{
 			name: "gatewayclass with no finalizers",
-			gc: &gwapiv1.GatewayClass{
+			gc: &gwapiv1b1.GatewayClass{
 				ObjectMeta: metav1.ObjectMeta{
 					Name: "test-gc",
 				},
@@ -43,7 +44,7 @@ func TestAddGatewayClassFinalizer(t *testing.T) {
 		},
 		{
 			name: "gatewayclass with a different finalizer",
-			gc: &gwapiv1.GatewayClass{
+			gc: &gwapiv1b1.GatewayClass{
 				ObjectMeta: metav1.ObjectMeta{
 					Name:       "test-gc",
 					Finalizers: []string{"fooFinalizer"},
@@ -56,7 +57,7 @@ func TestAddGatewayClassFinalizer(t *testing.T) {
 		},
 		{
 			name: "gatewayclass with existing gatewayclass finalizer",
-			gc: &gwapiv1.GatewayClass{
+			gc: &gwapiv1b1.GatewayClass{
 				ObjectMeta: metav1.ObjectMeta{
 					Name:       "test-gc",
 					Finalizers: []string{gatewayClassFinalizer},
@@ -90,12 +91,12 @@ func TestAddGatewayClassFinalizer(t *testing.T) {
 func TestRemoveGatewayClassFinalizer(t *testing.T) {
 	testCases := []struct {
 		name   string
-		gc     *gwapiv1.GatewayClass
+		gc     *gwapiv1b1.GatewayClass
 		expect []string
 	}{
 		{
 			name: "gatewayclass with no finalizers",
-			gc: &gwapiv1.GatewayClass{
+			gc: &gwapiv1b1.GatewayClass{
 				ObjectMeta: metav1.ObjectMeta{
 					Name: "test-gc",
 				},
@@ -107,7 +108,7 @@ func TestRemoveGatewayClassFinalizer(t *testing.T) {
 		},
 		{
 			name: "gatewayclass with a different finalizer",
-			gc: &gwapiv1.GatewayClass{
+			gc: &gwapiv1b1.GatewayClass{
 				ObjectMeta: metav1.ObjectMeta{
 					Name:       "test-gc",
 					Finalizers: []string{"fooFinalizer"},
@@ -120,7 +121,7 @@ func TestRemoveGatewayClassFinalizer(t *testing.T) {
 		},
 		{
 			name: "gatewayclass with existing gatewayclass finalizer",
-			gc: &gwapiv1.GatewayClass{
+			gc: &gwapiv1b1.GatewayClass{
 				ObjectMeta: metav1.ObjectMeta{
 					Name:       "test-gc",
 					Finalizers: []string{gatewayClassFinalizer},
@@ -157,7 +158,7 @@ func TestHasManagedClass(t *testing.T) {
 	testCases := []struct {
 		name     string
 		ep       client.Object
-		classes  []*gwapiv1.GatewayClass
+		classes  []*gwapiv1b1.GatewayClass
 		expected bool
 	}{
 		{
@@ -168,7 +169,7 @@ func TestHasManagedClass(t *testing.T) {
 					Name:      "test-envoyproxy",
 				},
 			},
-			classes: []*gwapiv1.GatewayClass{
+			classes: []*gwapiv1b1.GatewayClass{
 				{
 					ObjectMeta: metav1.ObjectMeta{
 						Name: "test-gc",
@@ -202,7 +203,7 @@ func TestHasManagedClass(t *testing.T) {
 					Name:      "test-envoyproxy",
 				},
 			},
-			classes: []*gwapiv1.GatewayClass{
+			classes: []*gwapiv1b1.GatewayClass{
 				{
 					ObjectMeta: metav1.ObjectMeta{
 						Name: "test-gc",
@@ -236,7 +237,7 @@ func TestHasManagedClass(t *testing.T) {
 					Name:      "test-envoyproxy",
 				},
 			},
-			classes: []*gwapiv1.GatewayClass{
+			classes: []*gwapiv1b1.GatewayClass{
 				{
 					ObjectMeta: metav1.ObjectMeta{
 						Name: "test-gc",
@@ -254,7 +255,7 @@ func TestHasManagedClass(t *testing.T) {
 					Name:      "test-envoyproxy",
 				},
 			},
-			classes: []*gwapiv1.GatewayClass{
+			classes: []*gwapiv1b1.GatewayClass{
 				{
 					ObjectMeta: metav1.ObjectMeta{
 						Name: "test-gc1",
@@ -341,13 +342,13 @@ func TestProcessParamsRef(t *testing.T) {
 
 	testCases := []struct {
 		name     string
-		gc       *gwapiv1.GatewayClass
+		gc       *gwapiv1b1.GatewayClass
 		ep       *egv1a1.EnvoyProxy
 		expected bool
 	}{
 		{
 			name: "valid envoyproxy reference",
-			gc: &gwapiv1.GatewayClass{
+			gc: &gwapiv1b1.GatewayClass{
 				ObjectMeta: metav1.ObjectMeta{
 					Name: "test",
 				},
@@ -371,7 +372,7 @@ func TestProcessParamsRef(t *testing.T) {
 		},
 		{
 			name: "envoyproxy kind does not exist",
-			gc: &gwapiv1.GatewayClass{
+			gc: &gwapiv1b1.GatewayClass{
 				ObjectMeta: metav1.ObjectMeta{
 					Name: "test",
 				},
@@ -389,7 +390,7 @@ func TestProcessParamsRef(t *testing.T) {
 		},
 		{
 			name: "referenced envoyproxy does not exist",
-			gc: &gwapiv1.GatewayClass{
+			gc: &gwapiv1b1.GatewayClass{
 				ObjectMeta: metav1.ObjectMeta{
 					Name: "test",
 				},
@@ -413,7 +414,7 @@ func TestProcessParamsRef(t *testing.T) {
 		},
 		{
 			name: "invalid gatewayclass parameters ref",
-			gc: &gwapiv1.GatewayClass{
+			gc: &gwapiv1b1.GatewayClass{
 				ObjectMeta: metav1.ObjectMeta{
 					Name: "test",
 				},

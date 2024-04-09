@@ -22,6 +22,7 @@ import (
 	fakeclient "sigs.k8s.io/controller-runtime/pkg/client/fake"
 	gwapiv1 "sigs.k8s.io/gateway-api/apis/v1"
 	gwapiv1a2 "sigs.k8s.io/gateway-api/apis/v1alpha2"
+	gwapiv1b1 "sigs.k8s.io/gateway-api/apis/v1beta1"
 
 	egv1a1 "github.com/envoyproxy/gateway/api/v1alpha1"
 	"github.com/envoyproxy/gateway/internal/envoygateway"
@@ -38,7 +39,7 @@ func TestProcessHTTPRoutes(t *testing.T) {
 
 	// The gatewayclass configured for the reconciler and referenced by test cases.
 	gcCtrlName := gwapiv1.GatewayController(egv1a1.GatewayControllerName)
-	gc := &gwapiv1.GatewayClass{
+	gc := &gwapiv1b1.GatewayClass{
 		ObjectMeta: metav1.ObjectMeta{
 			Name: "test",
 		},
@@ -48,7 +49,7 @@ func TestProcessHTTPRoutes(t *testing.T) {
 	}
 
 	// The gateway referenced by test cases.
-	gw := &gwapiv1.Gateway{
+	gw := &gwapiv1b1.Gateway{
 		ObjectMeta: metav1.ObjectMeta{
 			Namespace: "test",
 			Name:      "test",
@@ -72,14 +73,14 @@ func TestProcessHTTPRoutes(t *testing.T) {
 
 	testCases := []struct {
 		name               string
-		routes             []*gwapiv1.HTTPRoute
+		routes             []*gwapiv1b1.HTTPRoute
 		extensionFilters   []*unstructured.Unstructured
 		extensionAPIGroups []schema.GroupVersionKind
 		expected           bool
 	}{
 		{
 			name: "valid httproute",
-			routes: []*gwapiv1.HTTPRoute{
+			routes: []*gwapiv1b1.HTTPRoute{
 				{
 					ObjectMeta: metav1.ObjectMeta{
 						Namespace: httpRouteNS,
@@ -123,7 +124,7 @@ func TestProcessHTTPRoutes(t *testing.T) {
 		},
 		{
 			name: "httproute with one filter_from_extension",
-			routes: []*gwapiv1.HTTPRoute{
+			routes: []*gwapiv1b1.HTTPRoute{
 				{
 					ObjectMeta: metav1.ObjectMeta{
 						Namespace: httpRouteNS,
@@ -196,7 +197,7 @@ func TestProcessHTTPRoutes(t *testing.T) {
 		},
 		{
 			name: "httproute with invalid timeout setting for HTTPRouteRule",
-			routes: []*gwapiv1.HTTPRoute{
+			routes: []*gwapiv1b1.HTTPRoute{
 				{
 					ObjectMeta: metav1.ObjectMeta{
 						Namespace: httpRouteNS,
@@ -274,12 +275,12 @@ func TestProcessHTTPRoutes(t *testing.T) {
 			r.client = fakeclient.NewClientBuilder().
 				WithScheme(envoygateway.GetScheme()).
 				WithObjects(objs...).
-				WithIndex(&gwapiv1.HTTPRoute{}, gatewayHTTPRouteIndex, gatewayHTTPRouteIndexFunc).
+				WithIndex(&gwapiv1b1.HTTPRoute{}, gatewayHTTPRouteIndex, gatewayHTTPRouteIndexFunc).
 				Build()
 
 			// Wait until all the httproutes have been initialized.
 			require.Eventually(t, func() bool {
-				httpRoutes := gwapiv1.HTTPRouteList{}
+				httpRoutes := gwapiv1b1.HTTPRouteList{}
 				if err := r.client.List(ctx, &httpRoutes, client.InNamespace(httpRouteNS)); err != nil {
 					return false
 				}
@@ -313,7 +314,7 @@ func TestProcessHTTPRoutes(t *testing.T) {
 func TestProcessGRPCRoutes(t *testing.T) {
 	// The gatewayclass configured for the reconciler and referenced by test cases.
 	gcCtrlName := gwapiv1.GatewayController(egv1a1.GatewayControllerName)
-	gc := &gwapiv1.GatewayClass{
+	gc := &gwapiv1b1.GatewayClass{
 		ObjectMeta: metav1.ObjectMeta{
 			Name: "test",
 		},
@@ -323,7 +324,7 @@ func TestProcessGRPCRoutes(t *testing.T) {
 	}
 
 	// The gateway referenced by test cases.
-	gw := &gwapiv1.Gateway{
+	gw := &gwapiv1b1.Gateway{
 		ObjectMeta: metav1.ObjectMeta{
 			Namespace: "test",
 			Name:      "test",
@@ -440,15 +441,15 @@ func TestProcessGRPCRoutes(t *testing.T) {
 func TestValidateHTTPRouteParentRefs(t *testing.T) {
 	testCases := []struct {
 		name     string
-		route    *gwapiv1.HTTPRoute
-		gateways []*gwapiv1.Gateway
-		classes  []*gwapiv1.GatewayClass
-		expect   []gwapiv1.Gateway
+		route    *gwapiv1b1.HTTPRoute
+		gateways []*gwapiv1b1.Gateway
+		classes  []*gwapiv1b1.GatewayClass
+		expect   []gwapiv1b1.Gateway
 		expected bool
 	}{
 		{
 			name: "valid parentRef",
-			route: &gwapiv1.HTTPRoute{
+			route: &gwapiv1b1.HTTPRoute{
 				ObjectMeta: metav1.ObjectMeta{
 					Namespace: "test",
 					Name:      "test",
@@ -465,7 +466,7 @@ func TestValidateHTTPRouteParentRefs(t *testing.T) {
 					},
 				},
 			},
-			gateways: []*gwapiv1.Gateway{
+			gateways: []*gwapiv1b1.Gateway{
 				{
 					ObjectMeta: metav1.ObjectMeta{
 						Namespace: "test",
@@ -476,7 +477,7 @@ func TestValidateHTTPRouteParentRefs(t *testing.T) {
 					},
 				},
 			},
-			classes: []*gwapiv1.GatewayClass{
+			classes: []*gwapiv1b1.GatewayClass{
 				{
 					ObjectMeta: metav1.ObjectMeta{
 						Name: "gc1",
@@ -486,7 +487,7 @@ func TestValidateHTTPRouteParentRefs(t *testing.T) {
 					},
 				},
 			},
-			expect: []gwapiv1.Gateway{
+			expect: []gwapiv1b1.Gateway{
 				{
 					ObjectMeta: metav1.ObjectMeta{
 						Namespace:       "test",
@@ -502,7 +503,7 @@ func TestValidateHTTPRouteParentRefs(t *testing.T) {
 		},
 		{
 			name: "invalid parentRef group",
-			route: &gwapiv1.HTTPRoute{
+			route: &gwapiv1b1.HTTPRoute{
 				ObjectMeta: metav1.ObjectMeta{
 					Namespace: "test",
 					Name:      "test",
@@ -523,7 +524,7 @@ func TestValidateHTTPRouteParentRefs(t *testing.T) {
 		},
 		{
 			name: "invalid parentRef kind",
-			route: &gwapiv1.HTTPRoute{
+			route: &gwapiv1b1.HTTPRoute{
 				ObjectMeta: metav1.ObjectMeta{
 					Namespace: "test",
 					Name:      "test",
@@ -544,7 +545,7 @@ func TestValidateHTTPRouteParentRefs(t *testing.T) {
 		},
 		{
 			name: "non-existent parentRef name",
-			route: &gwapiv1.HTTPRoute{
+			route: &gwapiv1b1.HTTPRoute{
 				ObjectMeta: metav1.ObjectMeta{
 					Namespace: "test",
 					Name:      "test",
@@ -565,7 +566,7 @@ func TestValidateHTTPRouteParentRefs(t *testing.T) {
 		},
 		{
 			name: "valid parentRefs",
-			route: &gwapiv1.HTTPRoute{
+			route: &gwapiv1b1.HTTPRoute{
 				ObjectMeta: metav1.ObjectMeta{
 					Namespace: "test",
 					Name:      "test",
@@ -587,7 +588,7 @@ func TestValidateHTTPRouteParentRefs(t *testing.T) {
 					},
 				},
 			},
-			gateways: []*gwapiv1.Gateway{
+			gateways: []*gwapiv1b1.Gateway{
 				{
 					ObjectMeta: metav1.ObjectMeta{
 						Namespace: "test",
@@ -607,7 +608,7 @@ func TestValidateHTTPRouteParentRefs(t *testing.T) {
 					},
 				},
 			},
-			classes: []*gwapiv1.GatewayClass{
+			classes: []*gwapiv1b1.GatewayClass{
 				{
 					ObjectMeta: metav1.ObjectMeta{
 						Name: "gc1",
@@ -617,7 +618,7 @@ func TestValidateHTTPRouteParentRefs(t *testing.T) {
 					},
 				},
 			},
-			expect: []gwapiv1.Gateway{
+			expect: []gwapiv1b1.Gateway{
 				{
 					ObjectMeta: metav1.ObjectMeta{
 						Namespace:       "test",
@@ -643,7 +644,7 @@ func TestValidateHTTPRouteParentRefs(t *testing.T) {
 		},
 		{
 			name: "one of two parentRefs are managed",
-			route: &gwapiv1.HTTPRoute{
+			route: &gwapiv1b1.HTTPRoute{
 				ObjectMeta: metav1.ObjectMeta{
 					Namespace: "test",
 					Name:      "test",
@@ -665,7 +666,7 @@ func TestValidateHTTPRouteParentRefs(t *testing.T) {
 					},
 				},
 			},
-			gateways: []*gwapiv1.Gateway{
+			gateways: []*gwapiv1b1.Gateway{
 				{
 					ObjectMeta: metav1.ObjectMeta{
 						Namespace: "test",
@@ -685,7 +686,7 @@ func TestValidateHTTPRouteParentRefs(t *testing.T) {
 					},
 				},
 			},
-			classes: []*gwapiv1.GatewayClass{
+			classes: []*gwapiv1b1.GatewayClass{
 				{
 					ObjectMeta: metav1.ObjectMeta{
 						Name: "gc1",
@@ -703,7 +704,7 @@ func TestValidateHTTPRouteParentRefs(t *testing.T) {
 					},
 				},
 			},
-			expect: []gwapiv1.Gateway{
+			expect: []gwapiv1b1.Gateway{
 				{
 					ObjectMeta: metav1.ObjectMeta{
 						Namespace:       "test",
@@ -719,7 +720,7 @@ func TestValidateHTTPRouteParentRefs(t *testing.T) {
 		},
 		{
 			name: "one of two valid parentRefs kind",
-			route: &gwapiv1.HTTPRoute{
+			route: &gwapiv1b1.HTTPRoute{
 				ObjectMeta: metav1.ObjectMeta{
 					Namespace: "test",
 					Name:      "test",

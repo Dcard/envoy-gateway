@@ -58,11 +58,11 @@ func addReferenceGrantIndexers(ctx context.Context, mgr manager.Manager) error {
 //   - For Service, ServiceImports objects that are referenced in HTTPRoute objects via `.spec.rules.backendRefs`.
 //     This helps in querying for HTTPRoutes that are affected by a particular Service CRUD.
 func addHTTPRouteIndexers(ctx context.Context, mgr manager.Manager) error {
-	if err := mgr.GetFieldIndexer().IndexField(ctx, &gwapiv1.HTTPRoute{}, gatewayHTTPRouteIndex, gatewayHTTPRouteIndexFunc); err != nil {
+	if err := mgr.GetFieldIndexer().IndexField(ctx, &gwapiv1b1.HTTPRoute{}, gatewayHTTPRouteIndex, gatewayHTTPRouteIndexFunc); err != nil {
 		return err
 	}
 
-	if err := mgr.GetFieldIndexer().IndexField(ctx, &gwapiv1.HTTPRoute{}, backendHTTPRouteIndex, backendHTTPRouteIndexFunc); err != nil {
+	if err := mgr.GetFieldIndexer().IndexField(ctx, &gwapiv1b1.HTTPRoute{}, backendHTTPRouteIndex, backendHTTPRouteIndexFunc); err != nil {
 		return err
 	}
 
@@ -70,7 +70,7 @@ func addHTTPRouteIndexers(ctx context.Context, mgr manager.Manager) error {
 }
 
 func gatewayHTTPRouteIndexFunc(rawObj client.Object) []string {
-	httproute := rawObj.(*gwapiv1.HTTPRoute)
+	httproute := rawObj.(*gwapiv1b1.HTTPRoute)
 	var gateways []string
 	for _, parent := range httproute.Spec.ParentRefs {
 		if parent.Kind == nil || string(*parent.Kind) == gatewayapi.KindGateway {
@@ -88,7 +88,7 @@ func gatewayHTTPRouteIndexFunc(rawObj client.Object) []string {
 }
 
 func backendHTTPRouteIndexFunc(rawObj client.Object) []string {
-	httproute := rawObj.(*gwapiv1.HTTPRoute)
+	httproute := rawObj.(*gwapiv1b1.HTTPRoute)
 	var backendRefs []string
 	for _, rule := range httproute.Spec.Rules {
 		for _, backend := range rule.BackendRefs {
@@ -316,12 +316,12 @@ func backendUDPRouteIndexFunc(rawObj client.Object) []string {
 // referenced in Gateway objects. This helps in querying for Gateways that are
 // affected by a particular Secret CRUD.
 func addGatewayIndexers(ctx context.Context, mgr manager.Manager) error {
-	if err := mgr.GetFieldIndexer().IndexField(ctx, &gwapiv1.Gateway{}, secretGatewayIndex, secretGatewayIndexFunc); err != nil {
+	if err := mgr.GetFieldIndexer().IndexField(ctx, &gwapiv1b1.Gateway{}, secretGatewayIndex, secretGatewayIndexFunc); err != nil {
 		return err
 	}
 
-	if err := mgr.GetFieldIndexer().IndexField(ctx, &gwapiv1.Gateway{}, classGatewayIndex, func(rawObj client.Object) []string {
-		gateway := rawObj.(*gwapiv1.Gateway)
+	if err := mgr.GetFieldIndexer().IndexField(ctx, &gwapiv1b1.Gateway{}, classGatewayIndex, func(rawObj client.Object) []string {
+		gateway := rawObj.(*gwapiv1b1.Gateway)
 		return []string{string(gateway.Spec.GatewayClassName)}
 	}); err != nil {
 		return err
@@ -330,7 +330,7 @@ func addGatewayIndexers(ctx context.Context, mgr manager.Manager) error {
 }
 
 func secretGatewayIndexFunc(rawObj client.Object) []string {
-	gateway := rawObj.(*gwapiv1.Gateway)
+	gateway := rawObj.(*gwapiv1b1.Gateway)
 	var secretReferences []string
 	for _, listener := range gateway.Spec.Listeners {
 		if listener.TLS == nil || *listener.TLS.Mode != gwapiv1.TLSModeTerminate {
@@ -381,7 +381,7 @@ func secretSecurityPolicyIndexFunc(rawObj client.Object) []string {
 	securityPolicy := rawObj.(*v1alpha1.SecurityPolicy)
 
 	var (
-		secretReferences []gwapiv1b1.SecretObjectReference
+		secretReferences []gwapiv1.SecretObjectReference
 		values           []string
 	)
 
