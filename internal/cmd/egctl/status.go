@@ -18,8 +18,8 @@ import (
 	"github.com/spf13/cobra"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 	"sigs.k8s.io/controller-runtime/pkg/client"
-	gwv1 "sigs.k8s.io/gateway-api/apis/v1"
 	gwv1a2 "sigs.k8s.io/gateway-api/apis/v1alpha2"
+	gwv1b1 "sigs.k8s.io/gateway-api/apis/v1beta1"
 
 	egv1a1 "github.com/envoyproxy/gateway/api/v1alpha1"
 )
@@ -119,21 +119,21 @@ func runStatus(ctx context.Context, cli client.Client, resourceType, namespace s
 
 	switch strings.ToLower(resourceType) {
 	case "gc", "gatewayclass":
-		gc := gwv1.GatewayClassList{}
+		gc := gwv1b1.GatewayClassList{}
 		if err := cli.List(ctx, &gc, client.InNamespace(namespace)); err != nil {
 			return err
 		}
 		resourcesList = &gc
 
 	case "gtw", "gateway":
-		gtw := gwv1.GatewayList{}
+		gtw := gwv1b1.GatewayList{}
 		if err := cli.List(ctx, &gtw, client.InNamespace(namespace)); err != nil {
 			return err
 		}
 		resourcesList = &gtw
 
 	case "httproute":
-		httproute := gwv1.HTTPRouteList{}
+		httproute := gwv1b1.HTTPRouteList{}
 		if err := cli.List(ctx, &httproute, client.InNamespace(namespace)); err != nil {
 			return err
 		}

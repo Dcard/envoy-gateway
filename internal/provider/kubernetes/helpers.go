@@ -14,6 +14,7 @@ import (
 	"k8s.io/apimachinery/pkg/types"
 	"sigs.k8s.io/controller-runtime/pkg/client"
 	gwapiv1 "sigs.k8s.io/gateway-api/apis/v1"
+	gwapiv1b1 "sigs.k8s.io/gateway-api/apis/v1beta1"
 	mcsapi "sigs.k8s.io/mcs-api/pkg/apis/v1alpha1"
 
 	egv1a1 "github.com/envoyproxy/gateway/api/v1alpha1"
@@ -36,9 +37,9 @@ type ObjectKindNamespacedName struct {
 // is a Gateway.
 func validateParentRefs(ctx context.Context, client client.Client, namespace string,
 	gatewayClassController gwapiv1.GatewayController,
-	routeParentReferences []gwapiv1.ParentReference) ([]gwapiv1.Gateway, error) {
+	routeParentReferences []gwapiv1.ParentReference) ([]gwapiv1b1.Gateway, error) {
 
-	var gateways []gwapiv1.Gateway
+	var gateways []gwapiv1b1.Gateway
 	for i := range routeParentReferences {
 		ref := routeParentReferences[i]
 		if ref.Kind != nil && *ref.Kind != "Gateway" {
@@ -59,13 +60,13 @@ func validateParentRefs(ctx context.Context, client client.Client, namespace str
 			Name:      string(ref.Name),
 		}
 
-		gw := new(gwapiv1.Gateway)
+		gw := new(gwapiv1b1.Gateway)
 		if err := client.Get(ctx, gwKey, gw); err != nil {
 			return nil, fmt.Errorf("failed to get gateway %s/%s: %w", gwKey.Namespace, gwKey.Name, err)
 		}
 
 		gcKey := types.NamespacedName{Name: string(gw.Spec.GatewayClassName)}
-		gc := new(gwapiv1.GatewayClass)
+		gc := new(gwapiv1b1.GatewayClass)
 		if err := client.Get(ctx, gcKey, gc); err != nil {
 			return nil, fmt.Errorf("failed to get gatewayclass %s: %w", gcKey.Name, err)
 		}
@@ -79,14 +80,14 @@ func validateParentRefs(ctx context.Context, client client.Client, namespace str
 
 type controlledClasses struct {
 	// matchedClasses holds all GatewayClass objects with matching controllerName.
-	matchedClasses []*gwapiv1.GatewayClass
+	matchedClasses []*gwapiv1b1.GatewayClass
 }
 
-func (cc *controlledClasses) addMatch(gc *gwapiv1.GatewayClass) {
+func (cc *controlledClasses) addMatch(gc *gwapiv1b1.GatewayClass) {
 	cc.matchedClasses = append(cc.matchedClasses, gc)
 }
 
-func (cc *controlledClasses) removeMatch(gc *gwapiv1.GatewayClass) {
+func (cc *controlledClasses) removeMatch(gc *gwapiv1b1.GatewayClass) {
 	// First remove gc from matchedClasses.
 	for i, matchedGC := range cc.matchedClasses {
 		if matchedGC.Name == gc.Name {
@@ -99,7 +100,7 @@ func (cc *controlledClasses) removeMatch(gc *gwapiv1.GatewayClass) {
 
 // isAccepted returns true if the provided gatewayclass contains the Accepted=true
 // status condition.
-func isAccepted(gc *gwapiv1.GatewayClass) bool {
+func isAccepted(gc *gwapiv1b1.GatewayClass) bool {
 	if gc == nil {
 		return false
 	}
@@ -112,8 +113,8 @@ func isAccepted(gc *gwapiv1.GatewayClass) bool {
 }
 
 // gatewaysOfClass returns a list of gateways that reference gc from the provided gwList.
-func gatewaysOfClass(gc *gwapiv1.GatewayClass, gwList *gwapiv1.GatewayList) []gwapiv1.Gateway {
-	var gateways []gwapiv1.Gateway
+func gatewaysOfClass(gc *gwapiv1b1.GatewayClass, gwList *gwapiv1b1.GatewayList) []gwapiv1b1.Gateway {
+	var gateways []gwapiv1b1.Gateway
 	if gwList == nil || gc == nil {
 		return gateways
 	}
@@ -148,7 +149,7 @@ func refsSecret(ref *gwapiv1.SecretObjectReference) bool {
 // infraName returns expected name for the EnvoyProxy infra resources.
 // By default it returns hashed string from {GatewayNamespace}/{GatewayName},
 // but if mergeGateways is set, it will return hashed string of {GatewayClassName}.
-func infraName(gateway *gwapiv1.Gateway, merged bool) string {
+func infraName(gateway *gwapiv1b1.Gateway, merged bool) string {
 	if merged {
 		return proxy.ExpectedResourceHashedName(string(gateway.Spec.GatewayClassName))
 	}
@@ -176,7 +177,7 @@ func validateBackendRef(ref *gwapiv1.BackendRef) error {
 }
 
 // classRefsEnvoyProxy returns true if the provided GatewayClass references the provided EnvoyProxy.
-func classRefsEnvoyProxy(gc *gwapiv1.GatewayClass, ep *egv1a1.EnvoyProxy) bool {
+func classRefsEnvoyProxy(gc *gwapiv1b1.GatewayClass, ep *egv1a1.EnvoyProxy) bool {
 	if gc == nil || ep == nil {
 		return false
 	}
@@ -187,7 +188,7 @@ func classRefsEnvoyProxy(gc *gwapiv1.GatewayClass, ep *egv1a1.EnvoyProxy) bool {
 }
 
 // refsEnvoyProxy returns true if the provided GatewayClass references an EnvoyProxy.
-func refsEnvoyProxy(gc *gwapiv1.GatewayClass) bool {
+func refsEnvoyProxy(gc *gwapiv1b1.GatewayClass) bool {
 	if gc == nil {
 		return false
 	}
@@ -200,7 +201,7 @@ func refsEnvoyProxy(gc *gwapiv1.GatewayClass) bool {
 }
 
 // classAccepted returns true if the provided GatewayClass is accepted.
-func classAccepted(gc *gwapiv1.GatewayClass) bool {
+func classAccepted(gc *gwapiv1b1.GatewayClass) bool {
 	if gc == nil {
 		return false
 	}

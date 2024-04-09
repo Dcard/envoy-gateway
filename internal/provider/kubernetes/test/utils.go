@@ -14,6 +14,7 @@ import (
 	"k8s.io/utils/ptr"
 	gwapiv1 "sigs.k8s.io/gateway-api/apis/v1"
 	gwapiv1a2 "sigs.k8s.io/gateway-api/apis/v1alpha2"
+	gwapiv1b1 "sigs.k8s.io/gateway-api/apis/v1beta1"
 
 	egv1a1 "github.com/envoyproxy/gateway/api/v1alpha1"
 )
@@ -39,8 +40,8 @@ func GetEnvoyProxy(nsName types.NamespacedName, mergeGateways bool) *egv1a1.Envo
 }
 
 // GetGatewayClass returns a sample GatewayClass.
-func GetGatewayClass(name string, controller gwapiv1.GatewayController, envoyProxy *GroupKindNamespacedName) *gwapiv1.GatewayClass {
-	gwc := &gwapiv1.GatewayClass{
+func GetGatewayClass(name string, controller gwapiv1b1.GatewayController, envoyProxy *GroupKindNamespacedName) *gwapiv1b1.GatewayClass {
+	gwc := &gwapiv1b1.GatewayClass{
 		ObjectMeta: metav1.ObjectMeta{
 			Name: name,
 		},
@@ -62,8 +63,8 @@ func GetGatewayClass(name string, controller gwapiv1.GatewayController, envoyPro
 }
 
 // GetGateway returns a sample Gateway with single listener.
-func GetGateway(nsName types.NamespacedName, gwclass string, listenerPort int32) *gwapiv1.Gateway {
-	return &gwapiv1.Gateway{
+func GetGateway(nsName types.NamespacedName, gwclass string, listenerPort int32) *gwapiv1b1.Gateway {
+	return &gwapiv1b1.Gateway{
 		ObjectMeta: metav1.ObjectMeta{
 			Namespace: nsName.Namespace,
 			Name:      nsName.Name,
@@ -82,7 +83,7 @@ func GetGateway(nsName types.NamespacedName, gwclass string, listenerPort int32)
 }
 
 // GetSecureGateway returns a sample Gateway with single TLS listener.
-func GetSecureGateway(nsName types.NamespacedName, gwclass string, secretKindNSName GroupKindNamespacedName) *gwapiv1.Gateway {
+func GetSecureGateway(nsName types.NamespacedName, gwclass string, secretKindNSName GroupKindNamespacedName) *gwapiv1b1.Gateway {
 	secureGateway := GetGateway(nsName, gwclass, 8080)
 	secureGateway.Spec.Listeners[0].TLS = &gwapiv1.GatewayTLSConfig{
 		Mode: ptr.To(gwapiv1.TLSModeTerminate),
@@ -107,8 +108,8 @@ func GetSecret(nsName types.NamespacedName) *corev1.Secret {
 }
 
 // GetHTTPRoute returns a sample HTTPRoute with a parent reference.
-func GetHTTPRoute(nsName types.NamespacedName, parent string, serviceName types.NamespacedName, port int32) *gwapiv1.HTTPRoute {
-	return &gwapiv1.HTTPRoute{
+func GetHTTPRoute(nsName types.NamespacedName, parent string, serviceName types.NamespacedName, port int32) *gwapiv1b1.HTTPRoute {
+	return &gwapiv1b1.HTTPRoute{
 		ObjectMeta: metav1.ObjectMeta{
 			Namespace: nsName.Namespace,
 			Name:      nsName.Name,

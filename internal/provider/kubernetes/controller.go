@@ -150,7 +150,7 @@ func newResourceMapping() *resourceMappings {
 // be handled by a single call to Reconcile. The reconcile.Request DOES NOT map to a specific resource.
 func (r *gatewayAPIReconciler) Reconcile(ctx context.Context, _ reconcile.Request) (reconcile.Result, error) {
 	var (
-		managedGCs []*gwapiv1.GatewayClass
+		managedGCs []*gwapiv1b1.GatewayClass
 		err        error
 	)
 	r.log.Info("reconciling gateways")
@@ -289,8 +289,8 @@ func (r *gatewayAPIReconciler) Reconcile(ctx context.Context, _ reconcile.Reques
 }
 
 // managedGatewayClasses returns a list of GatewayClass objects that are managed by the Envoy Gateway Controller.
-func (r *gatewayAPIReconciler) managedGatewayClasses(ctx context.Context) ([]*gwapiv1.GatewayClass, error) {
-	var gatewayClasses gwapiv1.GatewayClassList
+func (r *gatewayAPIReconciler) managedGatewayClasses(ctx context.Context) ([]*gwapiv1b1.GatewayClass, error) {
+	var gatewayClasses gwapiv1b1.GatewayClassList
 	if err := r.client.List(ctx, &gatewayClasses); err != nil {
 		return nil, fmt.Errorf("error listing gatewayclasses: %w", err)
 	}
@@ -513,7 +513,7 @@ func (r *gatewayAPIReconciler) processSecretRef(
 	ownerKind string,
 	ownerNS string,
 	ownerName string,
-	secretRef gwapiv1b1.SecretObjectReference,
+	secretRef gwapiv1.SecretObjectReference,
 ) error {
 	secret := new(corev1.Secret)
 	secretNS := gatewayapi.NamespaceDerefOr(secretRef.Namespace, ownerNS)
@@ -614,7 +614,7 @@ func (r *gatewayAPIReconciler) processConfigMapRef(
 	ownerKind string,
 	ownerNS string,
 	ownerName string,
-	configMapRef gwapiv1b1.SecretObjectReference,
+	configMapRef gwapiv1.SecretObjectReference,
 ) error {
 	configMap := new(corev1.ConfigMap)
 	configMapNS := gatewayapi.NamespaceDerefOr(configMapRef.Namespace, ownerNS)
@@ -705,10 +705,10 @@ func (r *gatewayAPIReconciler) findReferenceGrant(ctx context.Context, from, to 
 	return nil, nil
 }
 
-func (r *gatewayAPIReconciler) processGateways(ctx context.Context, managedGC *gwapiv1.GatewayClass, resourceMap *resourceMappings, resourceTree *gatewayapi.Resources) error {
+func (r *gatewayAPIReconciler) processGateways(ctx context.Context, managedGC *gwapiv1b1.GatewayClass, resourceMap *resourceMappings, resourceTree *gatewayapi.Resources) error {
 	// Find gateways for the managedGC
 	// Find the Gateways that reference this Class.
-	gatewayList := &gwapiv1.GatewayList{}
+	gatewayList := &gwapiv1b1.GatewayList{}
 	if err := r.client.List(ctx, gatewayList, &client.ListOptions{
 		FieldSelector: fields.OneTermEqualSelector(classGatewayIndex, managedGC.Name),
 	}); err != nil {
@@ -891,7 +891,7 @@ func (r *gatewayAPIReconciler) processBackendTLSPolicies(
 }
 
 // removeFinalizer removes the gatewayclass finalizer from the provided gc, if it exists.
-func (r *gatewayAPIReconciler) removeFinalizer(ctx context.Context, gc *gwapiv1.GatewayClass) error {
+func (r *gatewayAPIReconciler) removeFinalizer(ctx context.Context, gc *gwapiv1b1.GatewayClass) error {
 	if slice.ContainsString(gc.Finalizers, gatewayClassFinalizer) {
 		base := client.MergeFrom(gc.DeepCopy())
 		gc.Finalizers = slice.RemoveString(gc.Finalizers, gatewayClassFinalizer)
@@ -903,7 +903,7 @@ func (r *gatewayAPIReconciler) removeFinalizer(ctx context.Context, gc *gwapiv1.
 }
 
 // addFinalizer adds the gatewayclass finalizer to the provided gc, if it doesn't exist.
-func (r *gatewayAPIReconciler) addFinalizer(ctx context.Context, gc *gwapiv1.GatewayClass) error {
+func (r *gatewayAPIReconciler) addFinalizer(ctx context.Context, gc *gwapiv1b1.GatewayClass) error {
 	if !slice.ContainsString(gc.Finalizers, gatewayClassFinalizer) {
 		base := client.MergeFrom(gc.DeepCopy())
 		gc.Finalizers = append(gc.Finalizers, gatewayClassFinalizer)
@@ -917,7 +917,7 @@ func (r *gatewayAPIReconciler) addFinalizer(ctx context.Context, gc *gwapiv1.Gat
 // watchResources watches gateway api resources.
 func (r *gatewayAPIReconciler) watchResources(ctx context.Context, mgr manager.Manager, c controller.Controller) error {
 	if err := c.Watch(
-		source.Kind(mgr.GetCache(), &gwapiv1.GatewayClass{}),
+		source.Kind(mgr.GetCache(), &gwapiv1b1.GatewayClass{}),
 		handler.EnqueueRequestsFromMapFunc(r.enqueueClass),
 		predicate.GenerationChangedPredicate{},
 		predicate.NewPredicateFuncs(r.hasMatchingController),
@@ -951,7 +951,7 @@ func (r *gatewayAPIReconciler) watchResources(ctx context.Context, mgr manager.M
 		gPredicates = append(gPredicates, predicate.NewPredicateFuncs(r.hasMatchingNamespaceLabels))
 	}
 	if err := c.Watch(
-		source.Kind(mgr.GetCache(), &gwapiv1.Gateway{}),
+		source.Kind(mgr.GetCache(), &gwapiv1b1.Gateway{}),
 		handler.EnqueueRequestsFromMapFunc(r.enqueueClass),
 		gPredicates...,
 	); err != nil {
@@ -967,7 +967,7 @@ func (r *gatewayAPIReconciler) watchResources(ctx context.Context, mgr manager.M
 		httprPredicates = append(httprPredicates, predicate.NewPredicateFuncs(r.hasMatchingNamespaceLabels))
 	}
 	if err := c.Watch(
-		source.Kind(mgr.GetCache(), &gwapiv1.HTTPRoute{}),
+		source.Kind(mgr.GetCache(), &gwapiv1b1.HTTPRoute{}),
 		handler.EnqueueRequestsFromMapFunc(r.enqueueClass),
 		httprPredicates...,
 	); err != nil {
@@ -1287,7 +1287,7 @@ func (r *gatewayAPIReconciler) hasManagedClass(obj client.Object) bool {
 		return false
 	}
 
-	gcList := new(gwapiv1.GatewayClassList)
+	gcList := new(gwapiv1b1.GatewayClassList)
 	err := r.client.List(context.TODO(), gcList)
 	if err != nil {
 		r.log.Error(err, "failed to list gatewayclasses")
@@ -1308,7 +1308,7 @@ func (r *gatewayAPIReconciler) hasManagedClass(obj client.Object) bool {
 }
 
 // processParamsRef processes the parametersRef of the provided GatewayClass.
-func (r *gatewayAPIReconciler) processParamsRef(ctx context.Context, gc *gwapiv1.GatewayClass, resourceTree *gatewayapi.Resources) error {
+func (r *gatewayAPIReconciler) processParamsRef(ctx context.Context, gc *gwapiv1b1.GatewayClass, resourceTree *gatewayapi.Resources) error {
 	if !refsEnvoyProxy(gc) {
 		return fmt.Errorf("unsupported parametersRef for gatewayclass %s", gc.Name)
 	}
@@ -1384,7 +1384,7 @@ func (r *gatewayAPIReconciler) processBackendTLSPolicyConfigMapRefs(ctx context.
 		if tls.CACertRefs != nil {
 			for _, caCertRef := range tls.CACertRefs {
 				if string(caCertRef.Kind) == gatewayapi.KindConfigMap {
-					caRefNew := gwapiv1b1.SecretObjectReference{
+					caRefNew := gwapiv1.SecretObjectReference{
 						Group:     gatewayapi.GroupPtr(string(caCertRef.Group)),
 						Kind:      gatewayapi.KindPtr(string(caCertRef.Kind)),
 						Name:      caCertRef.Name,

@@ -19,6 +19,7 @@ import (
 	"google.golang.org/protobuf/encoding/protojson"
 	"google.golang.org/protobuf/reflect/protoreflect"
 	"google.golang.org/protobuf/types/known/anypb"
+	gwapiv1b1 "sigs.k8s.io/gateway-api/apis/v1beta1"
 	"sigs.k8s.io/yaml"
 
 	adminv3 "github.com/envoyproxy/go-control-plane/envoy/admin/v3"
@@ -551,6 +552,13 @@ func addMissingServices(requiredServices map[string]*v1.Service, obj interface{}
 				refs = append(refs, httpBakcendRef.BackendRef)
 			}
 		}
+	case *gwapiv1b1.HTTPRoute:
+		objNamespace = route.Namespace
+		for _, rule := range route.Spec.Rules {
+			for _, httpBakcendRef := range rule.BackendRefs {
+				refs = append(refs, httpBakcendRef.BackendRef)
+			}
+		}
 	case *gwapiv1a2.GRPCRoute:
 		objNamespace = route.Namespace
 		for _, rule := range route.Spec.Rules {
@@ -681,7 +689,7 @@ func kubernetesYAMLToResources(str string, addMissingResources bool) (*gatewayap
 			resources.EnvoyProxy = envoyProxy
 		case gatewayapi.KindGatewayClass:
 			typedSpec := spec.Interface()
-			gatewayClass := &gwapiv1.GatewayClass{
+			gatewayClass := &gwapiv1b1.GatewayClass{
 				ObjectMeta: metav1.ObjectMeta{
 					Name:      name,
 					Namespace: namespace,
@@ -691,7 +699,7 @@ func kubernetesYAMLToResources(str string, addMissingResources bool) (*gatewayap
 			resources.GatewayClass = gatewayClass
 		case gatewayapi.KindGateway:
 			typedSpec := spec.Interface()
-			gateway := &gwapiv1.Gateway{
+			gateway := &gwapiv1b1.Gateway{
 				ObjectMeta: metav1.ObjectMeta{
 					Name:      name,
 					Namespace: namespace,
@@ -740,7 +748,7 @@ func kubernetesYAMLToResources(str string, addMissingResources bool) (*gatewayap
 			resources.TLSRoutes = append(resources.TLSRoutes, tlsRoute)
 		case gatewayapi.KindHTTPRoute:
 			typedSpec := spec.Interface()
-			httpRoute := &gwapiv1.HTTPRoute{
+			httpRoute := &gwapiv1b1.HTTPRoute{
 				TypeMeta: metav1.TypeMeta{
 					Kind: gatewayapi.KindHTTPRoute,
 				},

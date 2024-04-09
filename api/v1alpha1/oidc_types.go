@@ -5,9 +5,7 @@
 
 package v1alpha1
 
-import (
-	gwapiv1b1 "sigs.k8s.io/gateway-api/apis/v1beta1"
-)
+import gwapiv1 "sigs.k8s.io/gateway-api/apis/v1"
 
 const OIDCClientSecretKey = "client-secret"
 
@@ -28,7 +26,7 @@ type OIDC struct {
 	// This is an Opaque secret. The client secret should be stored in the key
 	// "client-secret".
 	// +kubebuilder:validation:Required
-	ClientSecret gwapiv1b1.SecretObjectReference `json:"clientSecret"`
+	ClientSecret gwapiv1.SecretObjectReference `json:"clientSecret"`
 
 	// The OIDC scopes to be used in the
 	// [Authentication Request](https://openid.net/specs/openid-connect-core-1_0.html#AuthRequest).

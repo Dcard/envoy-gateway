@@ -10,12 +10,12 @@ import (
 	"errors"
 	"fmt"
 
+	"github.com/envoyproxy/gateway/internal/gatewayapi"
+
 	corev1 "k8s.io/api/core/v1"
 	k8smachinery "k8s.io/apimachinery/pkg/types"
 	k8sclient "sigs.k8s.io/controller-runtime/pkg/client"
 	gwapiv1 "sigs.k8s.io/gateway-api/apis/v1"
-
-	"github.com/envoyproxy/gateway/internal/gatewayapi"
 )
 
 // ValidateSecretObjectReference validate secret object reference for extension tls and ratelimit tls settings.

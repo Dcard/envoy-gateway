@@ -16,7 +16,7 @@ import (
 	"k8s.io/apimachinery/pkg/types"
 	"k8s.io/apimachinery/pkg/util/sets"
 	"k8s.io/utils/ptr"
-	gwv1b1 "sigs.k8s.io/gateway-api/apis/v1"
+	gwv1 "sigs.k8s.io/gateway-api/apis/v1"
 	gwv1a2 "sigs.k8s.io/gateway-api/apis/v1alpha2"
 
 	egv1a1 "github.com/envoyproxy/gateway/api/v1alpha1"
@@ -263,7 +263,7 @@ func resolveCTPolicyTargetRef(policy *egv1a1.ClientTrafficPolicy, gateways map[t
 	targetNs := policy.Spec.TargetRef.Namespace
 	// If empty, default to namespace of policy
 	if targetNs == nil {
-		targetNs = ptr.To(gwv1b1.Namespace(policy.Namespace))
+		targetNs = ptr.To(gwv1.Namespace(policy.Namespace))
 	}
 
 	// Check if the gateway exists

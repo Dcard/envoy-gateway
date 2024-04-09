@@ -24,7 +24,7 @@ clientTrafficPolicies:
       - sig1
       - sig2
 gateways:
-- apiVersion: gateway.networking.k8s.io/v1
+- apiVersion: gateway.networking.k8s.io/v1beta1
   kind: Gateway
   metadata:
     namespace: envoy-gateway
