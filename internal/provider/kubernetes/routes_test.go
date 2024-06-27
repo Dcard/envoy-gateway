@@ -124,7 +124,7 @@ func TestProcessHTTPRoutes(t *testing.T) {
 		},
 		{
 			name: "httproute with extension filter multiple types same name",
-			routes: []*gwapiv1.HTTPRoute{
+			routes: []*gwapiv1b1.HTTPRoute{
 				{
 					ObjectMeta: metav1.ObjectMeta{
 						Namespace: httpRouteNS,
